@@ -1,6 +1,7 @@
 #-- DATA
-FILE: /data/iris.csv
-LABEL: variety
+FILE: /data/wine_database.mml
+HEADER: False
+LABEL: col0
 TEST_SIZE: 0.3
 #-- END
 
