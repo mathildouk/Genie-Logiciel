@@ -1,0 +1,10 @@
+#-- DATA
+FILE: ./iris.csv
+LABEL: variety
+TEST_SIZE: 0.3
+#-- END
+
+#-- ALGO dtree
+ALGO: decision-tree
+DISPLAY: accuracy
+#-- END	
