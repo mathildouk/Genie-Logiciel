@@ -2,9 +2,11 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn import tree
 from sklearn.metrics import accuracy_score
+import os
+from pathlib import Path
 
 # Using pandas to import the dataset
-df = pd.read_csv("data/iris.csv")
+df = pd.read_csv(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/data/iris.csv")
 
 # Learn more on pandas read_csv :
 #     https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html
