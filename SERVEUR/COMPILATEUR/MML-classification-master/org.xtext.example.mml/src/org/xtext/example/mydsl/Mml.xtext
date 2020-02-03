@@ -1,0 +1,140 @@
+grammar org.xtext.example.mydsl.Mml with org.eclipse.xtext.common.Terminals
+
+generate mml "http://www.xtext.org/example/mydsl/Mml"
+
+MMLModel:
+	input=DataInput
+	algorithms+=MLChoiceAlgorithm+
+	formula=RFormula?
+	validation=Validation
+	;
+
+
+
+	
+/*
+ * 
+ * mini DSL to read data (here CSV)
+ * mini CSV DSL
+ */
+DataInput: 'datainput' filelocation=STRING (parsingInstruction=CSVParsingConfiguration)?;
+
+CSVParsingConfiguration:
+	// we could extend it with quotes handling, encoding format, or even specificities of library used to parse it (eg pandas vs readcsv)
+	"separator" sep=CSVSeparator 	
+;
+
+enum CSVSeparator : COMMA=',' | SEMI_COLON=";" ;
+
+
+
+
+/*
+ * mini DSL to select the ML algorithm we want 
+ * we include the choice of the targeted language/framework
+ * ML algorithms can have hyperparameters
+ * 
+ */
+
+MLChoiceAlgorithm:
+	'mlframework' framework = FrameworkLang
+	'algorithm' algorithm = MLAlgorithm
+;
+
+
+enum FrameworkLang: SCIKIT="scikit-learn" | R="R" | JavaWeka="Weka" ;
+
+MLAlgorithm : (SVM|DT|RandomForest|LogisticRegression|XGboost) ;
+
+
+SVM: 
+	{SVM} 'SVM' ('gamma=' gamma=FLOAT)? ('C=' C=FLOAT)? (kernelSpecified?='kernel=' kernel=SVMKernel)?
+	(classificationSpecified?='classification' svmclassification = SVMClassification)?
+	;
+	
+enum SVMKernel:
+	linear='linear'|poly='polynomial'|radial='radial'
+;
+
+enum SVMClassification:
+	cClass= "C-classification" | nuClass ="nu-classification" | oneClass="one-classification"
+;
+
+DT:
+	{DT} ('DT'|'DecisionTree') (max_depth=INT)? ; // TODO: additional hyperparameters
+	// note: R-package CART: class or anova is out of the scope since we're only targeted classification problem
+
+
+RandomForest: {RandomForest}
+	('RandomForest'|'RF')
+; // TODO: hyperparameters?
+
+LogisticRegression: {LogisticRegression}
+	'LogisticRegression'
+; // TODO: hyperparameters?
+
+XGboost : {XGboost}
+	'XGboost'
+	// TODO: hyperparameters?
+;
+
+FLOAT: INT '.' INT;	
+
+
+/*
+ * mini DSL to specify "formula"
+ * inspired from R formula 
+ */
+ 
+RFormula:
+	('formula' (predictive=FormulaItem "~")? predictors=XFormula)
+;
+
+XFormula: (AllVariables | PredictorVariables);
+
+AllVariables : all='.';
+PredictorVariables : 
+	(vars+=FormulaItem ("+" vars+=FormulaItem)*)
+;
+
+// by name or integer
+FormulaItem:
+	column=INT | colName=STRING
+;
+
+
+/*
+ * mini DSL for evaluation
+ * choice of a "stratification" strategy and metric
+ */
+Validation:
+	stratification=StratificationMethod
+	metric+=ValidationMetric+
+	
+;
+
+StratificationMethod:
+	CrossValidation|TrainingTest
+;
+
+CrossValidation:
+	'CrossValidation' '{'
+	'numRepetitionCross' number = INT
+	'}'
+; // TODO: can certainly be extended
+
+TrainingTest:
+	'TrainingTest' '{'
+	'percentageTraining' number = INT
+	'}'
+;
+
+/*
+ * in case of multi-class (more than 2 classes), recall, precision, f1, accuracy are computed with the "micro" average
+ * https://scikit-learn.org/stable/modules/model_evaluation.html#from-binary-to-multiclass-and-multilabel
+ * 
+ */
+enum ValidationMetric:
+	BALANCED_ACCURACY='balanced_accuracy' | RECALL='recall' | PRECISION='precision' | F1='F1' | ACCURACY='accuracy' | MACRO_RECALL='macro_recall' | MACRO_PRECISION='macro_precision' | MACRO_F1='macro_F1' | MACRO_ACCURACY='macro_accuracy'
+; // TODO: can certainly be extended
+

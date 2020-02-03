@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="mml" nsURI="http://www.xtext.org/example/mydsl/Mml" nsPrefix="mml">
+  <eClassifiers xsi:type="ecore:EClass" name="MMLModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="input" eType="#//DataInput"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="algorithms" upperBound="-1"
+        eType="#//MLChoiceAlgorithm" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="formula" eType="#//RFormula"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="validation" eType="#//Validation"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DataInput">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="filelocation" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parsingInstruction" eType="#//CSVParsingConfiguration"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CSVParsingConfiguration">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sep" eType="#//CSVSeparator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="CSVSeparator">
+    <eLiterals name="COMMA" literal=","/>
+    <eLiterals name="SEMI_COLON" value="1" literal=";"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MLChoiceAlgorithm">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="framework" eType="#//FrameworkLang"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="algorithm" eType="#//MLAlgorithm"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="FrameworkLang">
+    <eLiterals name="SCIKIT" literal="scikit-learn"/>
+    <eLiterals name="R" value="1" literal="R"/>
+    <eLiterals name="JavaWeka" value="2" literal="Weka"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MLAlgorithm"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SVM" eSuperTypes="#//MLAlgorithm">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="gamma" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="C" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kernelSpecified" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kernel" eType="#//SVMKernel"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="classificationSpecified"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="svmclassification" eType="#//SVMClassification"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="SVMKernel">
+    <eLiterals name="linear" literal="linear"/>
+    <eLiterals name="poly" value="1" literal="polynomial"/>
+    <eLiterals name="radial" value="2" literal="radial"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="SVMClassification">
+    <eLiterals name="cClass" literal="C-classification"/>
+    <eLiterals name="nuClass" value="1" literal="nu-classification"/>
+    <eLiterals name="oneClass" value="2" literal="one-classification"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DT" eSuperTypes="#//MLAlgorithm">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="max_depth" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RandomForest" eSuperTypes="#//MLAlgorithm"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LogisticRegression" eSuperTypes="#//MLAlgorithm"/>
+  <eClassifiers xsi:type="ecore:EClass" name="XGboost" eSuperTypes="#//MLAlgorithm"/>
+  <eClassifiers xsi:type="ecore:EClass" name="RFormula">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="predictive" eType="#//FormulaItem"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="predictors" eType="#//XFormula"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="XFormula"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AllVariables" eSuperTypes="#//XFormula">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="all" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PredictorVariables" eSuperTypes="#//XFormula">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="vars" upperBound="-1" eType="#//FormulaItem"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormulaItem">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="column" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="colName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Validation">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="stratification" eType="#//StratificationMethod"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="metric" unique="false"
+        upperBound="-1" eType="#//ValidationMetric"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="StratificationMethod">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="number" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CrossValidation" eSuperTypes="#//StratificationMethod"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TrainingTest" eSuperTypes="#//StratificationMethod"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="ValidationMetric">
+    <eLiterals name="BALANCED_ACCURACY" literal="balanced_accuracy"/>
+    <eLiterals name="RECALL" value="1" literal="recall"/>
+    <eLiterals name="PRECISION" value="2" literal="precision"/>
+    <eLiterals name="F1" value="3" literal="F1"/>
+    <eLiterals name="ACCURACY" value="4" literal="accuracy"/>
+    <eLiterals name="MACRO_RECALL" value="5" literal="macro_recall"/>
+    <eLiterals name="MACRO_PRECISION" value="6" literal="macro_precision"/>
+    <eLiterals name="MACRO_F1" value="7" literal="macro_F1"/>
+    <eLiterals name="MACRO_ACCURACY" value="8" literal="macro_accuracy"/>
+  </eClassifiers>
+</ecore:EPackage>

@@ -1,0 +1,5 @@
+datainput "foo.csv"
+mlframework scikit-learn
+algorithm DT
+TrainingTest { percentageTraining 70 }
+recall
