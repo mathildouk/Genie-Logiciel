@@ -1,20 +1,10 @@
-package org.xtext.example.mydsl.tests;
+package org.xtext.example.mydsl.generator;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.xtext.testing.InjectWith;
-import org.eclipse.xtext.testing.extensions.InjectionExtension;
-import org.eclipse.xtext.testing.util.ParseHelper;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.xtext.example.mydsl.mml.CSVParsingConfiguration;
 import org.xtext.example.mydsl.mml.CrossValidation;
 import org.xtext.example.mydsl.mml.DT;
@@ -32,80 +22,59 @@ import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
 
 import com.google.common.io.Files;
-import com.google.inject.Inject;
 
-@ExtendWith(InjectionExtension.class)
-@InjectWith(MmlInjectorProvider.class)
-public class MmlParsingJavaTest {
-
-	@Inject
-	ParseHelper<MMLModel> parseHelper;
+public class MMLCompiler {
+	private MMLModel mml;
 	
-	@Test
-	public void loadModel() throws Exception {
-		MMLModel result = parseHelper.parse("datainput \"foo.csv\"\n"
-				+ "mlframework scikit-learn\n"
-				+ "algorithm DT\n"
-				+ "mlframework R\n"
-				+"algorithm DT\n"
-				+ "TrainingTest { percentageTraining 70 }\n"
-				+ "F1\n"
-				+ "");
-		Assertions.assertNotNull(result);
-		EList<Resource.Diagnostic> errors = result.eResource().getErrors();
-		Assertions.assertTrue(errors.isEmpty(), "Unexpected errors");			
-		Assertions.assertEquals("foo.csv", result.getInput().getFilelocation());			
-		
-	}		
 	
-	@Test
-	public void compileDataInput() throws Exception {
-		//un exemple particulier conforme  à la grammaire Xtext-MMLModel -> il faudrait le généraliser
-		MMLModel result = parseHelper.parse("datainput \"iris.csv\" separator ,\n"
-				+ "mlframework scikit-learn\n"
-				+ "algorithm DT\n"
-				+ "mlframework R\n"
-				+"algorithm DT\n"
-				+ "mlframework R\n"
-				+"algorithm DT\n"
-				+ "TrainingTest { percentageTraining 70 }\n"
-				+ "balanced_accuracy F1\n"
-				+ "");
-		
-		
-			
-		
-		
-		//execution du python?
-		/*
-		 * Calling generated Python script (basic solution through systems call)
-		 * we assume that "python" is in the path
-		 */
-		Process p = Runtime.getRuntime().exec("python mml.py");
-		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String line; 
-		while ((line = in.readLine()) != null) {
-			System.out.println(line);
-	    }
-
-		
-		
+	public MMLCompiler(MMLModel mml) {
+		this.mml = mml;
 	}
 
+
+
+	public String compute() throws IOException {
+		String codepython ="";
+		/************les frameworks choisis **************/
+		List<MLChoiceAlgorithm> algos = this.mml.getAlgorithms();
+		List<FrameworkLang> frameworks = new ArrayList<FrameworkLang>();
+		for (MLChoiceAlgorithm algo : algos) {
+			if (frameworks.contains(algo.getFramework()) == false ){
+				frameworks.add(algo.getFramework());
+			}
+		}
 		
-		
+		for (FrameworkLang framework : frameworks) {
+			switch(framework) {
+			
+			case SCIKIT:
+				System.out.println("PYTHON");
+				codepython= mmlToPython(this.mml);
+			break;
+			case R:
+				System.out.println("R");
+			break;
+			case JAVA_WEKA:
+				System.out.println("JAVA");
+			break;
+			}
+			
+		}
+		return codepython;
+	}
+	
+	
+	
 	private String mkValueInSingleQuote(String val) {
 		return "'" + val + "'";
 	}
 
 	
 	
-	
-	
-	
-	private void mmlToPython(MMLModel result) {
+	private String mmlToPython(MMLModel result) throws IOException {
 		/************les packages à importer **************/
-		String pythonImport = "import pandas as pd\n"; //les packages de base
+		String pythonImport = "import pandas as pd\n"
+				+ "import numpy as np\n"; //les packages de base
 		
 		/************Importation des données**************/
 		DataInput dataInput = result.getInput();
@@ -129,23 +98,7 @@ public class MmlParsingJavaTest {
 		
 		if (formula != null) {
 			//le decoupage du data set est spécifié
-			/*
-			RFormula:
-				('formula' (predictive=FormulaItem "~")? predictors=XFormula)
-			;
 			
-			XFormula: (AllVariables | PredictorVariables);
-			
-			AllVariables : all='.';
-			PredictorVariables : 
-				(vars+=FormulaItem ("+" vars+=FormulaItem)*)
-			;
-			
-			// by name or integer
-			FormulaItem:
-				column=INT | colName=STRING
-			;
-			 */
 		}else {
 			// le découpage n'est pas spécifier -> Y dernière colonne
 			formula_x_y += "Y_name = columns_names[-1]\n"
@@ -153,7 +106,8 @@ public class MmlParsingJavaTest {
 						+ "X = data.drop(columns=Y_name) \n";
 		}
 		
-		
+		formula_x_y += "if len(set(Y))>2:  average = 'macro'\n" 
+					+ "else: average=None \n";
 		/******************* Validation ******************/
 		String metrics_code = "";
 		
@@ -161,7 +115,6 @@ public class MmlParsingJavaTest {
 		Validation validation = result.getValidation();
 		List<ValidationMetric> validationMetrics = validation.getMetric();
 		StratificationMethod stratificationMethod = validation.getStratification();
-		Number number = stratificationMethod.getNumber();
 		
 		
 		List<String> columns_names_result = new ArrayList<String>();
@@ -171,13 +124,16 @@ public class MmlParsingJavaTest {
 		List<String> metrics_values = new ArrayList<String>();
 		
 		if ( stratificationMethod instanceof TrainingTest) {
+			Number number = stratificationMethod.getNumber();
+			float pct_train = (float) stratificationMethod.getNumber()/100;
 			
+			///Lever une exception si number en dehors de 0-100 avec try catch
 			
 			
 			/**** Découpage en training et test****/
 			pythonImport += "from sklearn.model_selection import train_test_split \n";
 			stratificationMethod_text += "\n# Spliting dataset into training set and test set\n"
-					+ "train_size = " + number +"\n"
+					+ "train_size = " + pct_train +"\n"
 					+ "X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size=train_size)\n";	
 			
 			for (ValidationMetric validationMetric : validationMetrics) {
@@ -185,59 +141,55 @@ public class MmlParsingJavaTest {
 				columns_names_result.add(mkValueInSingleQuote(validationMetric.toString().toLowerCase())) ;
 				switch(validationMetric) {
 					case BALANCED_ACCURACY:
+						pythonImport += "from sklearn.metrics import balanced_accuracy_score\n";
+						metrics_values.add("balanced_accuracy_score(Y_test, algo.predict(X_test)) \n");
+						break;
 					case ACCURACY :
 					case RECALL:
 					case PRECISION:
 					case F1:
-						String choix = validationMetric.toString().toLowerCase();
-						metrics_values.add(choix +"_score(Y_test, algo.predict(X_test)) \n");			
-					break;
 					case MACRO_RECALL:
-						metrics_values.add("recall_score(Y_test, algo.predict(X_test), average = 'macro') \n");		
-					break;
+					case MACRO_F1:
+					case MACRO_PRECISION:
+						String choix = validationMetric.toString().toLowerCase();
+						pythonImport += "from sklearn.metrics import " + choix +"_score\n";
+						metrics_values.add(choix +"_score(Y_test, algo.predict(X_test),average=average) \n");			
+						break;
+					
 					case MACRO_ACCURACY:
 						//metric = "macro_accuracy = f1_score(Y_test, algo.predict(X_test)) \nprint(macro_accuracy)";			
 					break;
-					case MACRO_F1:
-						metrics_values.add(" f1_score(Y_test, algo.predict(X_test), average='macro') \n");			
-					break;
-					case MACRO_PRECISION:
-						metrics_values.add(" precision_score(Y_test, algo.predict(X_test), average='macro') \n");
-					break;
+					
+					
 				}
 				
 			}
 			
 			
 		}else if(stratificationMethod instanceof CrossValidation) {
+			Number number = stratificationMethod.getNumber() ;
 			/**** Découpage cross-validation ****/
 			stratificationMethod_text = stratificationMethod_text +"#Cross Validation\n";
 			stratificationMethod_text = stratificationMethod_text + "numRepetitionCross = " + number +"\n"; 
+			//A FAIRE
 			
 		}
 		
 		
+		String dataframe_creation = "results=[" + columns_names_result +"]\n";
 		
-		/*****************************/
-		/***/
-		/**/
+		System.out.println(columns_names_result.get(0));
 		
-		String dataframe_creation = "results = pd.DataFrame(" + columns_names_result +")\n";
-		
-		
-		
-		
-		//# Set algorithms to use
-		String algorithms = "\n\n# Set algorithm to use\n";
+		String algorithms = "\n\n";
 		
 		List<MLChoiceAlgorithm> algos = result.getAlgorithms();
-		
+	
 		for (MLChoiceAlgorithm algo : algos) {
-			
+			List<String> framework_algo = new ArrayList<String>();
 			MLAlgorithm mlalgo = algo.getAlgorithm();
 			FrameworkLang framework = algo.getFramework();
 			
-			metrics_values.add(0,mkValueInSingleQuote(framework.toString().toLowerCase()));
+			framework_algo.add(0,mkValueInSingleQuote(framework.toString().toLowerCase()));
 			
 			
 			
@@ -249,11 +201,13 @@ public class MmlParsingJavaTest {
 				if(mlalgo instanceof DT) {
 					DT dt = (DT) mlalgo;
 					pythonImport = pythonImport + "from sklearn import tree \n";
-					metrics_values.add(0,mkValueInSingleQuote("decision tree"));
+					framework_algo.add(0,mkValueInSingleQuote("decision tree"));
+					
+					framework_algo.addAll(metrics_values);
 					
 					algorithm +="algo = tree.DecisionTreeClassifier()\n"
 							+"algo.fit(X_train, Y_train)\n\n"
-							+ "results.append("+ metrics_values +")\n";
+							+ "results.append("+ framework_algo +")\n";
 					
 				
 				
@@ -270,9 +224,9 @@ public class MmlParsingJavaTest {
 			
 		}
 		
+		String export = "\npd.DataFrame(results).to_csv(\"results_python.csv\",  sep=\";\", header=None, index=None)\n"; 
 		
-		
-		String pandasCode = pythonImport + csvReading + formula_x_y + stratificationMethod_text + dataframe_creation + algorithms ;
+		String pandasCode = pythonImport + csvReading + formula_x_y + stratificationMethod_text + dataframe_creation + algorithms +export;
 		
 	
 		
@@ -282,12 +236,10 @@ public class MmlParsingJavaTest {
 		
 		
 		
-		try {
-			Files.write(pandasCode.getBytes(), new File("mml.py"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} // traduction en python dans le fichier mml.py
+		Files.write(pandasCode.getBytes(), new File("mml1.py")); // traduction en python dans le fichier mml.py
+		
+		return pandasCode;
 		// end of Python generation
 	}
+
 }
