@@ -1,7 +1,9 @@
 package org.xtext.example.mydsl.generator;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +12,20 @@ import org.xtext.example.mydsl.mml.CrossValidation;
 import org.xtext.example.mydsl.mml.DT;
 import org.xtext.example.mydsl.mml.DataInput;
 import org.xtext.example.mydsl.mml.FrameworkLang;
+import org.xtext.example.mydsl.mml.LogisticRegression;
 import org.xtext.example.mydsl.mml.MLAlgorithm;
 import org.xtext.example.mydsl.mml.MLChoiceAlgorithm;
 import org.xtext.example.mydsl.mml.MMLModel;
 import org.xtext.example.mydsl.mml.RFormula;
+import org.xtext.example.mydsl.mml.RandomForest;
 import org.xtext.example.mydsl.mml.SVM;
+import org.xtext.example.mydsl.mml.SVMClassification;
 import org.xtext.example.mydsl.mml.SVMKernel;
 import org.xtext.example.mydsl.mml.StratificationMethod;
 import org.xtext.example.mydsl.mml.TrainingTest;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
+import org.xtext.example.mydsl.mml.XGboost;
 
 import com.google.common.io.Files;
 
@@ -79,6 +85,8 @@ public class MMLCompiler {
 		/************Importation des données**************/
 		DataInput dataInput = result.getInput();
 		String fileLocation = dataInput.getFilelocation(); //donne l'endroit où est le fichier de data
+		
+		
 		String DEFAULT_COLUMN_SEPARATOR = ","; // by default
 		String csv_separator = DEFAULT_COLUMN_SEPARATOR;
 		CSVParsingConfiguration parsingInstruction = dataInput.getParsingInstruction();
@@ -90,6 +98,7 @@ public class MMLCompiler {
 		String csvReading = "\n#Using pandas to import the dataset \n"
 				+ "data = pd.read_csv(" + mkValueInSingleQuote(fileLocation) + ", sep=" + mkValueInSingleQuote(csv_separator) + ")\n"
 				+ "columns_names = data.columns\n";
+		
 		
 		
 		/*****************Définir X et Y******************/
@@ -157,7 +166,7 @@ public class MMLCompiler {
 						break;
 					
 					case MACRO_ACCURACY:
-						//metric = "macro_accuracy = f1_score(Y_test, algo.predict(X_test)) \nprint(macro_accuracy)";			
+						//j'ai pas trouvé la fonction python	
 					break;
 					
 					
@@ -191,31 +200,118 @@ public class MMLCompiler {
 			
 			framework_algo.add(0,mkValueInSingleQuote(framework.toString().toLowerCase()));
 			
-			
-			
 			String algorithm = "";
 			
 			if (framework == FrameworkLang.SCIKIT) {
 				System.err.println("scikit learn is targeted");
 				
+				
 				if(mlalgo instanceof DT) {
 					DT dt = (DT) mlalgo;
-					pythonImport = pythonImport + "from sklearn import tree \n";
-					framework_algo.add(0,mkValueInSingleQuote("decision tree"));
 					
+					String max_depth =  "None";
+					if (dt.getMax_depth() != 0) {
+						max_depth = Integer.toString(dt.getMax_depth());
+					}
+										
+					pythonImport = pythonImport + "from sklearn import tree \n";
+					framework_algo.add(0,mkValueInSingleQuote("DecisionTree"));
 					framework_algo.addAll(metrics_values);
 					
-					algorithm +="algo = tree.DecisionTreeClassifier()\n"
-							+"algo.fit(X_train, Y_train)\n\n"
-							+ "results.append("+ framework_algo +")\n";
+					algorithm +="algo = tree.DecisionTreeClassifier(max_depth = "+ max_depth+")\n"
+							+"algo.fit(X_train, Y_train)\n"
+							+ "results.append("+ framework_algo +")\n\n\n";
 					
 				
-				
+				}else if(mlalgo instanceof RandomForest) {
+					RandomForest rf = (RandomForest) mlalgo;
+					pythonImport = pythonImport + "from sklearn.ensemble import RandomForestClassifier \n";
+					framework_algo.add(0,mkValueInSingleQuote("RandomForest"));
+					framework_algo.addAll(metrics_values);
+					
+					algorithm +="algo = RandomForestClassifier()\n"
+							+"algo.fit(X_train, Y_train)\n"
+							+ "results.append("+ framework_algo +")\n\n\n";
+					
+					
+				}else if(mlalgo instanceof LogisticRegression) {
+					LogisticRegression lr = (LogisticRegression) mlalgo;
+					pythonImport = pythonImport + "from sklearn.linear_model import LogisticRegression \n";
+					framework_algo.add(0,mkValueInSingleQuote("LogisticRegression"));
+					framework_algo.addAll(metrics_values);
+					
+					algorithm +="algo = LogisticRegression()\n"
+							+"algo.fit(X_train, Y_train)\n"
+							+ "results.append("+ framework_algo +")\n\n\n";
+					
+					
+				}else if(mlalgo instanceof XGboost) {
+					XGboost xgboost = (XGboost) mlalgo;
+					pythonImport = pythonImport + "import xgboost as xgb \n";
+					framework_algo.add(0,mkValueInSingleQuote("XGboost"));
+					framework_algo.addAll(metrics_values);
+					
+					algorithm +="algo = xgb.XGBClassifier()\n"
+							+"algo.fit(X_train, Y_train)\n"
+							+ "results.append("+ framework_algo +")\n\n\n";
+					
+					
 				}else if(mlalgo instanceof SVM) {
 					SVM svm = (SVM) mlalgo;
-					SVMKernel kernel = svm.getKernel();
+					SVMClassification svmclassification = svm.getSvmclassification();
+					String gamma = mkValueInSingleQuote("scale");
+					if (svm.getGamma()!=null) {
+						gamma = svm.getGamma();
+					}
+					String c = "1";
+					if (svm.getC()!=null) {
+						c = svm.getC();
+					}
+					String kernel = svm.getKernel().toString();
+					switch(svm.getKernel()) {
+					case LINEAR :
+						kernel = "linear";
+						break;
+					case POLY:
+						kernel = "poly";
+						break;
+					case RADIAL:
+						kernel = "rbf";
+						break;
+						
+					}
+										
+					pythonImport = pythonImport + "import sklearn.svm as svm\n";
+					framework_algo.add(0,mkValueInSingleQuote("SVM"));
+					framework_algo.addAll(metrics_values);
 					
+					switch(svmclassification) {
+					case CCLASS:
+						algorithm +="algo = svm.SVC(C="+ c +", kernel = "+mkValueInSingleQuote(kernel) +", gamma =" + gamma+")\n"
+								  + "algo.fit(X_train, Y_train)\n"
+								  + "results.append("+ framework_algo +")\n\n\n";
+						
+						break;
+						
+					case NU_CLASS:
+						algorithm +="algo = svm.NuSVC( kernel = "+mkValueInSingleQuote(kernel) +", gamma =" + gamma+")\n"
+								  + "algo.fit(X_train, Y_train)\n"
+								  + "results.append("+ framework_algo +")\n\n\n";
+						
+						break;
+					case ONE_CLASS:
+						algorithm +="algo = svm.OneClassSVM( kernel = "+mkValueInSingleQuote(kernel) +", gamma =" + gamma+")\n"
+								  + "algo.fit(X_train, Y_train)\n"
+								  + "results.append("+ framework_algo +")\n\n\n";
+						
+						break;
+					}
 				}
+				
+				
+				
+				
+				
 			}else {
 				System.err.println("UNSUPPORTED");
 			}
@@ -224,21 +320,72 @@ public class MMLCompiler {
 			
 		}
 		
-		String export = "\npd.DataFrame(results).to_csv(\"results_python.csv\",  sep=\";\", header=None, index=None)\n"; 
+		String export = "\npd.DataFrame(results).to_csv(\"results_python.csv\",  sep=\";\", header=None, index=None)\nprint(results)\n"; 
 		
 		String pandasCode = pythonImport + csvReading + formula_x_y + stratificationMethod_text + dataframe_creation + algorithms +export;
 		
+		
 	
+		Files.write(pandasCode.getBytes(), new File("scripts_upload/mml.py")); // traduction en python dans le fichier mml.py
+		
+		/*
+		 * Calling generated Python script (basic solution through systems call)
+		 * we assume that "python" is in the path
+		 */
 		
 		
+		Process p = Runtime.getRuntime().exec("python scripts_upload/mml.py");
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line; 
+		while ((line = in.readLine()) != null) {
+			System.out.println(line);
+	    }
+		try {
+			p.waitFor();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        System.out.println ("exit: " + p.exitValue());
+        System.out.println ("exit: " + p.getErrorStream());
+        p.destroy();
 		
-		
-		
-		
-		
-		Files.write(pandasCode.getBytes(), new File("mml1.py")); // traduction en python dans le fichier mml.py
-		
+        
+        
+        /*
+        ProcessBuilder processBuilder = new ProcessBuilder();
+    	processBuilder.command("/usr/bin/python", "scripts_upload/mml.py");
+    	try {
+
+    		Process process = processBuilder.start();
+
+    		StringBuilder output = new StringBuilder();
+
+    		BufferedReader reader = new BufferedReader(
+    				new InputStreamReader(process.getInputStream()));
+
+    		String lin;
+    		while ((lin = reader.readLine()) != null) {
+    			output.append(lin + "\n");
+    		}
+
+    		int exitVal = process.waitFor();
+    		if (exitVal == 0) {
+    			System.out.println("Success!");
+    			System.out.println(output);
+    		
+    		} else {
+    			//abnormal...
+    		}
+
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	} catch (InterruptedException e) {
+    		e.printStackTrace();
+    	}
+        */
 		return pandasCode;
+		
 		// end of Python generation
 	}
 
