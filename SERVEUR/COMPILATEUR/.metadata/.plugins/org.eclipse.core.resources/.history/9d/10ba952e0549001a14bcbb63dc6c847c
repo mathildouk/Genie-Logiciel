@@ -1,0 +1,19 @@
+<html>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<body>
+<h2>MML</h2>
+<form method="post" action="/generate">
+    <textarea name="mml" rows="20" cols="200" ></textarea>
+    <br />
+    <button>Submit</button>
+</form>
+
+
+<h1>Upload example</h1>
+<form method="post" action="/upload-example" enctype="multipart/form-data">
+    <input type="file" name="files" multiple>
+    <button>Submit</button>
+</form>
+</body>
+</html>
