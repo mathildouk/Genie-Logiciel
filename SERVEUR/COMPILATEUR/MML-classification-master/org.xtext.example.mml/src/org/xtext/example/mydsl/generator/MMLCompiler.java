@@ -350,11 +350,10 @@ public class MMLCompiler {
         System.out.println ("exit: " + p.getErrorStream());
         p.destroy();
 		
-        
-        
         /*
+        
         ProcessBuilder processBuilder = new ProcessBuilder();
-    	processBuilder.command("/usr/bin/python", "scripts_upload/mml.py");
+    	processBuilder.command("python", "scripts_upload/mml.py");
     	try {
 
     		Process process = processBuilder.start();
