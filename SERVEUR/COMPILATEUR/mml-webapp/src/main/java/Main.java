@@ -33,12 +33,14 @@ public class Main {
 		
 		MMLLoader mmlLoader = new MMLLoader();	    
 		MMLModel mml = mmlLoader.loadModel(mmlContent);
-		// TODO: call your compiler!
+		
 		MMLCompiler mmlcompiler = new MMLCompiler(mml);
 		String computeMML = mmlcompiler.compute();
 		return computeMML;
 	}
 
 }
+
+
 
 
