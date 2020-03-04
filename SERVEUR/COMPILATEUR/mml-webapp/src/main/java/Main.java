@@ -1,4 +1,8 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.xtext.example.mydsl.generator.MMLCompiler;
 import org.xtext.example.mydsl.mml.MMLModel;
@@ -36,8 +40,13 @@ public class Main {
 		
 		MMLCompiler mmlcompiler = new MMLCompiler(mml);
 		String computeMML = mmlcompiler.compute();
+		System.out.println("bllllll");
+		
+		//System.out.println(readFromCsvFile(";", "scripts_upload/results/results_python.csv"));
 		return computeMML;
 	}
+	
+	
 
 }
 

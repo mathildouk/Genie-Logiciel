@@ -43,6 +43,7 @@ public class MMLCompiler {
 
 	public String compute() throws IOException {
 		String codepython ="";
+		String codeR ="";
 		/************les frameworks choisis **************/
 		List<MLChoiceAlgorithm> algos = this.mml.getAlgorithms();
 		List<FrameworkLang> frameworks = new ArrayList<FrameworkLang>();
@@ -61,7 +62,7 @@ public class MMLCompiler {
 			break;
 			case R:
 				System.out.println("R");
-				//codeR= mmlToR(this.mml);
+				//codeR = mmlToR(this.mml);
 			break;
 			case JAVA_WEKA:
 				System.out.println("JAVA");
@@ -69,6 +70,7 @@ public class MMLCompiler {
 			}
 			
 		}
+		//return codepython;
 		return codepython;
 	}
 	
@@ -112,6 +114,14 @@ public class MMLCompiler {
 		
 		if (formula != null) {
 			//le decoupage du data set est spécifié
+			//FormulaItem y = formula.getPredictive();
+			System.out.println(formula.getPredictive().getColName());
+			System.out.println(formula.getPredictive().getColumn());
+			System.out.println(formula.getPredictors());
+			//System.out.println(y);
+			//System.out.println(x);
+			//y.getColumn()
+			//x.getAll();
 			
 		}else {
 			// le découpage n'est pas spécifier -> Y dernière colonne
@@ -120,8 +130,8 @@ public class MMLCompiler {
 						+ "X = data.drop(columns=Y_name) \n";
 		}
 		
-		formula_x_y += "if len(set(Y))>2:  average = 'macro'\n" 
-					+ "else: average=None \n";
+		formula_x_y += "if len(set(Y))>2:  average = 'micro'; average_cv='micro'\n" 
+				+ "else: average='binary'; average_cv='' \n";
 		/******************* Validation ******************/
 		String metrics_code = "";
 		
@@ -137,6 +147,8 @@ public class MMLCompiler {
 		columns_names_result.add(mkValueInSingleQuote("FrameWork"));
 		
 		List<String> metrics_values = new ArrayList<String>();
+		String metrics_values_list ="";
+		String fit_or_cv_algo = "";
 		
 		if ( stratificationMethod instanceof TrainingTest) {
 			Number number = stratificationMethod.getNumber();
@@ -151,6 +163,9 @@ public class MMLCompiler {
 					+ "train_size = " + pct_train +"\n"
 					+ "X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size=train_size)\n";	
 			
+			
+			fit_or_cv_algo = "algo.fit(X_train, Y_train)\n";
+			
 			for (ValidationMetric validationMetric : validationMetrics) {
 				
 				columns_names_result.add(mkValueInSingleQuote(validationMetric.toString().toLowerCase())) ;
@@ -159,33 +174,84 @@ public class MMLCompiler {
 						pythonImport += "from sklearn.metrics import balanced_accuracy_score\n";
 						metrics_values.add("balanced_accuracy_score(Y_test, algo.predict(X_test)) \n");
 						break;
-					case ACCURACY :
+					case ACCURACY :				
 					case RECALL:
 					case PRECISION:
 					case F1:
-					case MACRO_RECALL:
-					case MACRO_F1:
-					case MACRO_PRECISION:
 						String choix = validationMetric.toString().toLowerCase();
 						pythonImport += "from sklearn.metrics import " + choix +"_score\n";
-						metrics_values.add(choix +"_score(Y_test, algo.predict(X_test),average=average) \n");			
+						metrics_values.add(choix +"_score(Y_test, algo.predict(X_test),average= average) \n");
 						break;
-					
+						
+					case MACRO_RECALL:
+						pythonImport += "from sklearn.metrics import recall_score\n";
+						metrics_values.add("recall_score(Y_test, algo.predict(X_test),average='macro') \n");			
+						break;
+					case MACRO_F1:
+						pythonImport += "from sklearn.metrics import f1_score\n";
+						metrics_values.add("f1_score(Y_test, algo.predict(X_test),average='macro') \n");			
+						break;
+					case MACRO_PRECISION:
+						pythonImport += "from sklearn.metrics import precision_score\n";
+						metrics_values.add("precision_score(Y_test, algo.predict(X_test),average='macro') \n");			
+						break;							
 					case MACRO_ACCURACY:
 						//j'ai pas trouvé la fonction python	
-					break;
-					
-					
+					break;				
 				}
 				
 			}
-			
+			metrics_values_list = metrics_values.toString();
+			System.out.println(metrics_values_list.getClass());
 			
 		}else if(stratificationMethod instanceof CrossValidation) {
+			pythonImport += "from sklearn.model_selection import cross_validate\n"
+						+ "from sklearn.model_selection import RepeatedKFold\n";
+			
 			Number number = stratificationMethod.getNumber() ;
+			
 			/**** Découpage cross-validation ****/
-			stratificationMethod_text = stratificationMethod_text +"#Cross Validation\n";
-			stratificationMethod_text = stratificationMethod_text + "numRepetitionCross = " + number +"\n"; 
+			stratificationMethod_text += "#Cross Validation\n"
+										+ "numRepetitionCross = " + number +"\n"
+										+ "rkf = RepeatedKFold( n_repeats=numRepetitionCross)\n";
+			
+			List<String> list_scoring = new ArrayList<String>();
+			for (ValidationMetric validationMetric : validationMetrics) {
+				columns_names_result.add(mkValueInSingleQuote(validationMetric.toString().toLowerCase())) ;
+				
+				switch(validationMetric) {
+					case BALANCED_ACCURACY:
+						list_scoring.add("'balanced_accuracy'");
+						break;
+					case ACCURACY :
+						list_scoring.add("'accuracy'");
+						break;
+					case RECALL:
+						list_scoring.add("'recall_'+average_cv");
+						break;
+					case PRECISION:
+						list_scoring.add("'precision_'+average_cv");
+						break;
+					case F1:
+						list_scoring.add("'f1_'+average_cv");
+						break;				
+					case MACRO_RECALL:
+						list_scoring.add("'recall_macro'");
+						break;
+					case MACRO_F1:
+						list_scoring.add("'f1_macro'");
+						break;
+					case MACRO_PRECISION:
+						list_scoring.add("'precision_macro'");
+						break;						
+					case MACRO_ACCURACY:
+						//j'ai pas trouvé la fonction python	
+					break;
+				}
+			}
+			fit_or_cv_algo = "cv_results = cross_validate(algo, X, Y, cv= rkf, scoring="+list_scoring+")\n";
+			metrics_values_list = "[cv_results[k].mean() for k in cv_results.keys() if k.startswith(\"test_\")]"; 
+			
 			//A FAIRE
 			
 		}
@@ -224,11 +290,12 @@ public class MMLCompiler {
 					framework_algo.add(0,mkValueInSingleQuote("max_depth = "+ max_depth));
 					framework_algo.add(0,mkValueInSingleQuote("DecisionTree"));
 						
-					framework_algo.addAll(metrics_values);
 					System.err.println(framework_algo);
 					algorithm +="algo = tree.DecisionTreeClassifier(max_depth = "+ max_depth+")\n"
-							+"algo.fit(X_train, Y_train)\n"
-							+ "results.append("+ framework_algo +")\n";
+							+ fit_or_cv_algo
+							+ "framework_algo = " + framework_algo + "\n"
+							+ "framework_algo.extend(" + metrics_values_list+")\n"
+							+ "results.append(framework_algo)\n";
 					
 				
 				}else if(mlalgo instanceof RandomForest) {
@@ -236,11 +303,11 @@ public class MMLCompiler {
 					pythonImport = pythonImport + "from sklearn.ensemble import RandomForestClassifier \n";
 					framework_algo.add(0,mkValueInSingleQuote(""));
 					framework_algo.add(0,mkValueInSingleQuote("RandomForest"));
-					framework_algo.addAll(metrics_values);
-					
 					algorithm +="algo = RandomForestClassifier()\n"
-							+"algo.fit(X_train, Y_train)\n"
-							+ "results.append("+ framework_algo +")\n";
+							+ fit_or_cv_algo
+							+ "framework_algo = " + framework_algo + "\n"
+							+ "framework_algo.extend(" + metrics_values_list+")\n"
+							+ "results.append(framework_algo)\n";
 					
 					
 				}else if(mlalgo instanceof LogisticRegression) {
@@ -248,23 +315,24 @@ public class MMLCompiler {
 					pythonImport = pythonImport + "from sklearn.linear_model import LogisticRegression \n";
 					framework_algo.add(0,mkValueInSingleQuote(""));
 					framework_algo.add(0,mkValueInSingleQuote("LogisticRegression"));
-					framework_algo.addAll(metrics_values);
-					
+										
 					algorithm +="algo = LogisticRegression()\n"
-							+"algo.fit(X_train, Y_train)\n"
-							+ "results.append("+ framework_algo +")\n";
-					
+							+ fit_or_cv_algo
+							+ "framework_algo = " + framework_algo + "\n"
+							+ "framework_algo.extend(" + metrics_values_list+")\n"
+							+ "results.append(framework_algo)\n";
 					
 				}else if(mlalgo instanceof XGboost) {
 					XGboost xgboost = (XGboost) mlalgo;
 					pythonImport = pythonImport + "import xgboost as xgb \n";
 					framework_algo.add(0,mkValueInSingleQuote(""));
 					framework_algo.add(0,mkValueInSingleQuote("XGboost"));
-					framework_algo.addAll(metrics_values);
-					
+										
 					algorithm +="algo = xgb.XGBClassifier()\n"
-							+"algo.fit(X_train, Y_train)\n"
-							+ "results.append("+ framework_algo +")\n";
+							+ fit_or_cv_algo
+							+ "framework_algo = " + framework_algo + "\n"
+							+ "framework_algo.extend(" + metrics_values_list+")\n"
+							+ "results.append(framework_algo)\n";
 					
 					
 				}else if(mlalgo instanceof SVM) {
@@ -301,29 +369,35 @@ public class MMLCompiler {
 					case CCLASS:
 						framework_algo.add(0,mkValueInSingleQuote("C="+ c +", kernel = "+kernel +", gamma = " + gamma_no_quote));
 						framework_algo.add(0,mkValueInSingleQuote("SVM - C-classification"));
-						framework_algo.addAll(metrics_values);
+						
 						algorithm +="algo = svm.SVC(C="+ c +", kernel = "+mkValueInSingleQuote(kernel) +", gamma =" + gamma+")\n"
-								  + "algo.fit(X_train, Y_train)\n"
-								  + "results.append("+ framework_algo +")\n";
+								+ fit_or_cv_algo
+								+ "framework_algo = " + framework_algo + "\n"
+								+ "framework_algo.extend(" + metrics_values_list+")\n"
+								+ "results.append(framework_algo)\n";
 						
 						break;
 						
 					case NU_CLASS:
 						framework_algo.add(0,mkValueInSingleQuote("kernel = "+kernel +", gamma = " + gamma_no_quote));
 						framework_algo.add(0,mkValueInSingleQuote("SVM - Nu-classification"));
-						framework_algo.addAll(metrics_values);
+					
 						algorithm +="algo = svm.NuSVC( kernel = "+mkValueInSingleQuote(kernel) +", gamma =" + gamma+")\n"
-								  + "algo.fit(X_train, Y_train)\n"
-								  + "results.append("+ framework_algo +")\n";
+								+ fit_or_cv_algo
+								+ "framework_algo = " + framework_algo + "\n"
+								+ "framework_algo.extend(" + metrics_values_list+")\n"
+								+ "results.append(framework_algo)\n";
 						
 						break;
 					case ONE_CLASS:
 						framework_algo.add(0,mkValueInSingleQuote("kernel = "+kernel +", gamma = " + gamma_no_quote));
 						framework_algo.add(0,mkValueInSingleQuote("SVM - One-classification"));
-						framework_algo.addAll(metrics_values);
+						
 						algorithm +="algo = svm.OneClassSVM( kernel = "+mkValueInSingleQuote(kernel) +", gamma =" + gamma+")\n"
-								  + "algo.fit(X_train, Y_train)\n"
-								  + "results.append("+ framework_algo +")\n";
+								+ fit_or_cv_algo
+								+ "framework_algo = " + framework_algo + "\n"
+								+ "framework_algo.extend(" + metrics_values_list+")\n"
+								+ "results.append(framework_algo)\n";
 						
 						break;
 					}
@@ -375,39 +449,7 @@ public class MMLCompiler {
         System.out.println ("exit: " + p.exitValue());
         p.destroy();
 		
-        /*
-        
-        ProcessBuilder processBuilder = new ProcessBuilder();
-    	processBuilder.command("python", "scripts_upload/mml.py");
-    	try {
-
-    		Process process = processBuilder.start();
-
-    		StringBuilder output = new StringBuilder();
-
-    		BufferedReader reader = new BufferedReader(
-    				new InputStreamReader(process.getInputStream()));
-
-    		String lin;
-    		while ((lin = reader.readLine()) != null) {
-    			output.append(lin + "\n");
-    		}
-
-    		int exitVal = process.waitFor();
-    		if (exitVal == 0) {
-    			System.out.println("Success!");
-    			System.out.println(output);
-    		
-    		} else {
-    			//abnormal...
-    		}
-
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	} catch (InterruptedException e) {
-    		e.printStackTrace();
-    	}
-        */
+       
 		return pandasCode;
 		
 		// end of Python generation
@@ -419,10 +461,15 @@ public class MMLCompiler {
 	/********************************************			R			***************************************************/
 	/**********************************************************************************************************************/
 	
+	
 	private String mmlToR(MMLModel result) throws IOException {
 		/************les packages à importer **************/
-		String RPackages; 
-		
+		String RPackages = "packages<- function(name){\n" + 
+				"  if(eval(parse(text=paste(\"!require(\",name,\")\")))){\n" + 
+				"    install.packages(name)\n" + 
+				"    eval(parse(text=paste(\"library(\",name,\")\")))\n" + 
+				"  }\n" + 
+				"}\n"; 
 		/************Importation des données**************/
 		DataInput dataInput = result.getInput();
 		String fileLocation = dataInput.getFilelocation(); //donne l'endroit où est le fichier de data
@@ -441,7 +488,6 @@ public class MMLCompiler {
 				+ "columns_names = colnames(data)\n";
 		
 		
-		
 		/*****************Définir X et Y******************/
 		String formula_x_y = "\n#Spliting dataset between features (X) and label (y)\n"
 				+ "#y-> the last column\n";
@@ -452,13 +498,16 @@ public class MMLCompiler {
 			
 		}else {
 			// le découpage n'est pas spécifier -> Y dernière colonne
-			formula_x_y += "y_name = rev(columns_names)[1]\n"
-						+ "Y = data[y_name] \n"
+			formula_x_y += "Y_name = rev(columns_names)[1]\n"
+						+ "Y = data[Y_name] \n"
 						+ "X = rev(data)[,-1] \n";
 		}
 		
-		formula_x_y += "if len(set(Y))>2:  average = 'macro'\n" 
-					+ "else: average=None \n";
+		formula_x_y += "if(length(unique(Y)[,1])>2){\n" + 
+						"  average = 'macro'\n" + 
+						"}else{\n" + 
+						"  average=NULL \n" + 
+						"} \n";
 		/******************* Validation ******************/
 		String metrics_code = "";
 		
@@ -487,9 +536,11 @@ public class MMLCompiler {
 					+ "train_size = " + pct_train +"\n"
 					+ "indice_train= sample(c(1:nrow(data)), train_size*nrow(data))\n"
 					+ "train=data[indice_train, ]\n"
-					+ "X_train = rev(train)[,-1]\n" + "Y_train = train[y_name] \n"
+					+ "X_train = rev(train)[,-1]\n" 
+					+ "Y_train = train[Y_name] \n"
 					+ "test=data[-indice_train, ]\n"
-					+ "X_test = rev(test)[,-1] \n" + "Y_test = test[y_name] \n";
+					+ "X_test = rev(test)[,-1] \n" 
+					+ "Y_test = test[Y_name] \n";
 			
 			for (ValidationMetric validationMetric : validationMetrics) {
 				
@@ -545,8 +596,7 @@ public class MMLCompiler {
 				
 				if(mlalgo instanceof DT) {
 					DT dt = (DT) mlalgo;					
-					RPackages = RPackages + "install.packages("rpart") \n"
-						+ "library(rpart) \n";
+					RPackages = RPackages + "packages('rpart') \n";
 					framework_algo.add(0,mkValueInSingleQuote("DecisionTree"));
 					framework_algo.addAll(metrics_values);
 					
@@ -674,6 +724,7 @@ public class MMLCompiler {
         System.out.println ("exit: " + p.exitValue());
         System.out.println ("exit: " + p.getErrorStream());
         p.destroy();
+		
 		
       
 		return RCode;
