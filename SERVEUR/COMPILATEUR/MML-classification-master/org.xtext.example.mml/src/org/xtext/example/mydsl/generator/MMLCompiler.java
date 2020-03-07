@@ -404,16 +404,11 @@ public class MMLCompiler {
 						break;
 					}
 				}
-				
-				
-				
-				
-				
-			}else {
-				System.err.println("UNSUPPORTED");
+					
 			}
-			algorithms = algorithms + "try:\n" + algorithm.replaceAll("(?m)^", "\t") + "except: print('At least one algorithm has received an error')\n\n";
-			
+			if(algorithm!=""){
+				algorithms = algorithms + "try:\n" + algorithm.replaceAll("(?m)^", "\t") + "except: print('At least one algorithm has received an error')\n\n";
+			}
 			
 		}
 		
@@ -744,23 +739,20 @@ public class MMLCompiler {
 							break;
 					}
 				}
-				
-				
-				
-				
-				
-			}else {
-				System.err.println("UNSUPPORTED");
+								
+								
 			}
-			algorithms = algorithms + algorithm;
-			
+			if(algorithm!=""){
+				algorithms = algorithms + "try({\n" + algorithm.replaceAll("(?m)^", "\t") + "})\n\n";
+			}
+					
 			
 		}
 		
 		String export = "results_df = data.frame(results, row.names = NULL)\n" + 
 				"colnames(results_df) =results_colnames\n" + 
 				"results_df = results_df[-1,]\n"
-				+ "write.table(results_df,\"results_R.csv\", sep = \";\",dec='.',quote=FALSE, row.names = FALSE)\n"; 
+				+ "write.table(results_df,\"scripts_upload/results/results_R.csv\", sep = \";\",dec='.',quote=FALSE, row.names = FALSE)\n"; 
 		
 		String RCode = RPackages + csvReading + formula_x_y + stratificationMethod_text + dataframe_creation + algorithms +export;
 		
@@ -768,9 +760,9 @@ public class MMLCompiler {
 	
 		Files.write(RCode.getBytes(), new File("scripts_upload/mml.R")); // traduction en R dans le fichier mml.py
 		
-		/*
 		
-		Process p = Runtime.getRuntime().exec("R scripts_upload/mml.R");
+		
+		Process p = Runtime.getRuntime().exec("Rscript scripts_upload/mml.R");
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String line; 
 		while ((line = in.readLine()) != null) {
@@ -786,7 +778,7 @@ public class MMLCompiler {
         System.out.println ("exit: " + p.getErrorStream());
         p.destroy();
 		
-		*/
+		
       
 		return RCode;
 		
