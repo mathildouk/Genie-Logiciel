@@ -44,6 +44,32 @@ public class MMLCompiler {
 	public String compute() throws IOException {
 		String codepython ="";
 		String codeR ="";
+		
+		//Process p = Runtime.getRuntime().exec("/bin/rm scripts_upload/*.R scripts_upload/*.py scripts_upload/results/*.csv");
+		Process p = Runtime.getRuntime().exec("rm scripts_upload/mml.py scripts_upload/mml.R scripts_upload/results/results_python.csv scripts_upload/results/results_R.csv");
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line; 
+		while ((line = in.readLine()) != null) {
+			System.out.println(line);
+	    }
+		
+		/*Process p = Runtime.getRuntime().exec("/bin/bash scripts_upload/deleteCMD.bash");
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line; 
+		while ((line = in.readLine()) != null) {
+			System.out.println(line);
+	    }*/
+		/*
+		System.out.prinln('-------------------');
+		Process p = Runtime.getRuntime().exec("ls");
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line; 
+		while ((line = in.readLine()) != null) {
+			System.out.println(line);
+	    }
+		System.out.prinln('-------------------');
+		*/
+		
 		/************les frameworks choisis **************/
 		List<MLChoiceAlgorithm> algos = this.mml.getAlgorithms();
 		List<FrameworkLang> frameworks = new ArrayList<FrameworkLang>();
@@ -615,7 +641,7 @@ public class MMLCompiler {
 				if(mlalgo instanceof DT) {
 					DT dt = (DT) mlalgo;
 					
-					String max_depth =  ""; //30 default in R
+					String max_depth =  "30"; //30 default in R
 					if (dt.getMax_depth() != 0) {
 						max_depth = Integer.toString(dt.getMax_depth());
 					}

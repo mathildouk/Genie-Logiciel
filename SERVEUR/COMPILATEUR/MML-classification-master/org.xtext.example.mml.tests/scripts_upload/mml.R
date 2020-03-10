@@ -8,9 +8,9 @@ packages("yardstick")
 packages("rminer")
 packages('rpart') 
 packages("randomForest") 
-packages('e1071') 
 packages("nnet") 
 packages('xgboost') 
+packages('e1071') 
 
 #Import the dataset 
 data = read.csv('/home/id1019/Documents/iris.csv', sep=',')
@@ -72,23 +72,6 @@ try({
 })
 
 try({
-	algo = svm(formula, data=train, type = "one-classification",kernel = 'radial', gamma=8, cost=2)
-	Y_pred = predict(algo, X_test)
-	results = rbind(results, c('SVM - One-classification', 'kernel = radial, gamma = 8', 'R', bal_accuracy_vec(Y_test[,1], Y_pred) 
-	, recall_vec(Y_test[,1], Y_pred, estimator="micro") 
-	, precision_vec(Y_test[,1], Y_pred, estimator="micro") 
-	, accuracy_vec(Y_test[,1], Y_pred) 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='ACC') /100 #ACC= equal to micro averaged F1 score (help) 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroTPR') /100 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroPRECISION') /100 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroACC') /100 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroF1') /100 
-	))
-	
-	
-})
-
-try({
 	algo = multinom(formula, data=train)
 	Y_pred = predict(algo, X_test,  type="class")
 	results = rbind(results, c('LogisticRegression', '', 'R', bal_accuracy_vec(Y_test[,1], Y_pred) 
@@ -115,6 +98,23 @@ try({
 	Y_pred = predict(algo, X_test_matrix)
 	Y_pred = as.factor(levels(Y_train[,1])[Y_pred+1]) 
 	results = rbind(results, c('XGboost', '', 'R', bal_accuracy_vec(Y_test[,1], Y_pred) 
+	, recall_vec(Y_test[,1], Y_pred, estimator="micro") 
+	, precision_vec(Y_test[,1], Y_pred, estimator="micro") 
+	, accuracy_vec(Y_test[,1], Y_pred) 
+	, mmetric(y=Y_test[,1], x =Y_pred, metric='ACC') /100 #ACC= equal to micro averaged F1 score (help) 
+	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroTPR') /100 
+	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroPRECISION') /100 
+	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroACC') /100 
+	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroF1') /100 
+	))
+	
+	
+})
+
+try({
+	algo = svm(formula, data=train, type = "nu-classification",kernel = 'radial', gamma=8, cost=2)
+	Y_pred = predict(algo, X_test)
+	results = rbind(results, c('SVM - Nu-classification', 'kernel = radial, gamma = 8', 'R', bal_accuracy_vec(Y_test[,1], Y_pred) 
 	, recall_vec(Y_test[,1], Y_pred, estimator="micro") 
 	, precision_vec(Y_test[,1], Y_pred, estimator="micro") 
 	, accuracy_vec(Y_test[,1], Y_pred) 
