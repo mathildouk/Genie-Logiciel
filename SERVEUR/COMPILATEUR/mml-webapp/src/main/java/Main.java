@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import org.xtext.example.mydsl.generator.MMLCompiler;
 import org.xtext.example.mydsl.mml.MMLModel;
@@ -40,9 +42,16 @@ public class Main {
 		
 		MMLCompiler mmlcompiler = new MMLCompiler(mml);
 		String computeMML = mmlcompiler.compute();
-		System.out.println("bllllll");
 		
-		//System.out.println(readFromCsvFile(";", "scripts_upload/results/results_python.csv"));
+	
+		//concat results in one file
+		Process p = Runtime.getRuntime().exec("/home/id1019/anaconda3/bin/python scripts_upload/concatCSV.py");
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line; 
+		while ((line = in.readLine()) != null) {
+			System.out.println(line);
+	    }
+		
 		return computeMML;
 	}
 	

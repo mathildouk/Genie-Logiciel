@@ -9,8 +9,7 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import f1_score
-from sklearn import tree 
-from sklearn.ensemble import RandomForestClassifier 
+from sklearn.linear_model import LogisticRegression 
 
 #Using pandas to import the dataset 
 data = pd.read_csv('/home/id1019/Documents/iris.csv', sep=',')
@@ -30,25 +29,9 @@ results=[['Algorithm', 'Parameters', 'FrameWork', 'balanced_accuracy', 'recall',
 
 
 try:
-	algo = tree.DecisionTreeClassifier(max_depth = None)
+	algo = LogisticRegression()
 	algo.fit(X_train, Y_train)
-	framework_algo = ['DecisionTree', 'max_depth = None', 'scikit-learn']
-	framework_algo.extend([balanced_accuracy_score(Y_test, algo.predict(X_test)) 
-	, recall_score(Y_test, algo.predict(X_test),average= 'micro') 
-	, precision_score(Y_test, algo.predict(X_test),average= 'micro') 
-	, accuracy_score(Y_test, algo.predict(X_test)) 
-	, f1_score(Y_test, algo.predict(X_test),average= 'micro') 
-	, recall_score(Y_test, algo.predict(X_test),average='macro') 
-	, precision_score(Y_test, algo.predict(X_test),average='macro') 
-	, f1_score(Y_test, algo.predict(X_test),average='macro') 
-	])
-	results.append(framework_algo)
-except: print('At least one algorithm has received an error')
-
-try:
-	algo = RandomForestClassifier()
-	algo.fit(X_train, Y_train)
-	framework_algo = ['RandomForest', '', 'scikit-learn']
+	framework_algo = ['LogisticRegression', '', 'scikit-learn']
 	framework_algo.extend([balanced_accuracy_score(Y_test, algo.predict(X_test)) 
 	, recall_score(Y_test, algo.predict(X_test),average= 'micro') 
 	, precision_score(Y_test, algo.predict(X_test),average= 'micro') 
