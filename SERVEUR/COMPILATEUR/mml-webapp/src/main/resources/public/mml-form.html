@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang='en'> 
+
+<head>
+    <meta charset='utf-8'/>
+    <link rel='stylesheet' type="text/css" href='style.css' media='screen'/>
+</head>
+
+<body>
+
+<script type='text/javascript' src='scriptsFORM.js'>
+    /** This script contains the necessary functions. **/
+</script>
+
+<form id="main_form" method="post" action="/mml-form-generate" enctype="multipart/form-data">
+    <div class="block">
+        <h2>Data (Select a File) :</h2>
+        <br></br> 
+        <input type='file' name='myFile' multiple>
+        <br><br>
+    </div>
+
+    <div id=validation_choice_block class="block">
+        <!-- The block related to the validation type choice. -->
+        <h2>Validation Choice :</h2>
+        <br></br>
+        <input id=val_radio_cv type='radio' name='val_choice' value='cv' onclick='showK()' checked="checked"> Cross-validation
+        <br></br>
+        <input type='radio' name='val_choice' value='split' onclick='showSplit()'> Split Data
+        <p id='val_details'>
+        <script>
+            /** This script makes sure the correct box is showed when the html is initialized. **/
+            if (document.getElementById('val_radio_cv').checked) {
+                showK()
+            }
+            else {
+                showSplit()
+            }
+        </script>
+    </div>
+
+    <div id=algo_blocks class="block">
+        <h2>
+            Algorithms :
+            <input id='add_algo' type='button' value='Add' onClick="addAlgorithmBlock()">
+            <input id='remove_algo' type='button' value='Remove' onClick="removeAlgorithmBlock()">
+        </h2>
+        <br></br>
+    </div>
+
+    <div id=val_metrics class="block">
+        <h2>Metrics Choice :</h2>
+        <br></br>
+        <script>
+        var options = ["balanced_accuracy", "recall", "precision", "accuracy", "F1", "macro_recall", "macro_precision", "macro_accuracy", "macro_F1"];
+        html = "";
+        for (i in options) {
+            html += "<input type='checkbox' name='{0}' value={0}>{0}<br></br>".format(options[i]);
+        }
+        node = document.getElementById("val_metrics");
+        node.innerHTML += html;
+        </script>
+    </div>
+
+    <div class="block">
+        <button type="submit" formmethod="post">Submit</button>
+    </div>
+  </form>
+
+</body>
+
+</html>

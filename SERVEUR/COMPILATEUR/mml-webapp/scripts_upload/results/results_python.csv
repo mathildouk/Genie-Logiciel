@@ -1,2 +1,2 @@
-Algorithm;Parameters;FrameWork;balanced_accuracy;recall;precision;accuracy;f1;macro_recall;macro_precision;macro_accuracy;macro_f1
-LogisticRegression;;scikit-learn;0.961038961038961;0.9555555555555556;0.9555555555555556;0.9555555555555556;0.9555555555555556;0.961038961038961;0.961038961038961;0.961038961038961;
+Algorithm;Parameters;FrameWork;balanced_accuracy;accuracy
+RandomForest;;scikit-learn;0.9743589743589745;0.9666666666666667

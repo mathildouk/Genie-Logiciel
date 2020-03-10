@@ -1,11 +1,12 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import org.python.google.common.io.Files;
 import org.xtext.example.mydsl.generator.MMLCompiler;
 import org.xtext.example.mydsl.mml.MMLModel;
 
@@ -17,42 +18,42 @@ public class Main {
   
     public static void main(String[] args) {
 
+  
+		
         Javalin app = Javalin.create(config -> {
             config.addStaticFiles("/public");
+            
         }).start(8080);
 
         app.post("/generate", ctx -> {
-            ctx.html("Your MML " + processMML(ctx.formParam("mml")) + " will be processed");
-   
+        	Files.write(ctx.formParam("mml").getBytes(), new File("scripts_upload/code.mml")); 
+        	processMML(ctx.formParam("mml"));
+        	ctx.redirect("/results-choose.html");
         });
 
-        app.post("/upload-example", ctx -> {
-            ctx.uploadedFiles("files").forEach(file -> {
+        app.post("/mml-form-generate", ctx -> {
+        	ctx.uploadedFiles("myFile").forEach(file -> {
                 FileUtil.streamToFile(file.getContent(), "scripts_upload/upload/" + file.getFilename());
             });
-            ctx.html("Upload successful");
+        	
+        	FormParser form_parser = new FormParser(ctx);
+        	Files.write(form_parser.mml.getBytes(), new File("scripts_upload/code.mml")); 
+        	processMML(form_parser.mml);
+        	ctx.redirect("/results-choose.html");
         });
-
+        
+        
+       
     }
 
-	private static String processMML(String mmlContent) throws IOException {
+	private static void processMML(String mmlContent) throws IOException {
 		
 		MMLLoader mmlLoader = new MMLLoader();	    
 		MMLModel mml = mmlLoader.loadModel(mmlContent);
 		
 		MMLCompiler mmlcompiler = new MMLCompiler(mml);
-		String computeMML = mmlcompiler.compute();
+		mmlcompiler.compute();
 		
-	
-		//concat results in one file
-		Process p = Runtime.getRuntime().exec("/home/id1019/anaconda3/bin/python scripts_upload/concatCSV.py");
-		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String line; 
-		while ((line = in.readLine()) != null) {
-			System.out.println(line);
-	    }
-		
-		return computeMML;
 	}
 	
 	

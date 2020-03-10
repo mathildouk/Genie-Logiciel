@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.python.util.PythonInterpreter;
+//import org.python.util.PythonInterpreter;
 import org.xtext.example.mydsl.mml.CSVParsingConfiguration;
 import org.xtext.example.mydsl.mml.CrossValidation;
 import org.xtext.example.mydsl.mml.DT;
@@ -41,12 +41,11 @@ public class MMLCompiler {
 
 
 
-	public String compute() throws IOException {
+	public void compute() throws IOException {
 		String codepython ="";
 		String codeR ="";
 		
-		//Process p = Runtime.getRuntime().exec("/bin/rm scripts_upload/*.R scripts_upload/*.py scripts_upload/results/*.csv");
-		Process p = Runtime.getRuntime().exec("rm scripts_upload/mml.py scripts_upload/mml.R scripts_upload/results/results_python.csv scripts_upload/results/results_R.csv scripts_upload/results/results.csv scripts_upload/html/visuPYTHON.html scripts_upload/html/visuR.html");
+		Process p = Runtime.getRuntime().exec("rm scripts_upload/mml.py scripts_upload/mml.R scripts_upload/results/results_python.csv scripts_upload/results/results_R.csv scripts_upload/results/results.csv target/classes/public/visuPYTHON.html target/classes/public/visuR.html");
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String line; 
 		while ((line = in.readLine()) != null) {
@@ -81,8 +80,15 @@ public class MMLCompiler {
 			}
 			
 		}
-		//return codepython;
-		return codeR;
+		
+		//concat results in one file
+		Process p2 = Runtime.getRuntime().exec("/home/id1019/anaconda3/bin/python scripts_upload/concatCSV.py");
+		BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+		String line2; 
+		while ((line2 = in2.readLine()) != null) {
+			System.out.println(line2);
+	    }
+			
 	}
 	
 	
@@ -459,8 +465,8 @@ public class MMLCompiler {
 		
        
         //pygmentize -f html -O full -o test.html mml.py 
-
-        Process p2 = Runtime.getRuntime().exec("pygmentize -f html -O full -o scripts_upload/html/visuPYTHON.html scripts_upload/mml.py ");
+        ///home/id1019/Documents/Génie logiciel/PROJET GITHUB/Genie-Logiciel/SERVEUR/COMPILATEUR/mml-webapp/target/classes/public
+        Process p2 = Runtime.getRuntime().exec("pygmentize -f html -O full -o target/classes/public/visuPYTHON.html scripts_upload/mml.py ");
 		BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
 		String line2; 
 		while ((line2 = in2.readLine()) != null) {
@@ -801,7 +807,7 @@ public class MMLCompiler {
         System.out.println ("exit: " + p.getErrorStream());
         p.destroy();
 		
-        Process p2 = Runtime.getRuntime().exec("pygmentize -f html -O full -o scripts_upload/html/visuR.html scripts_upload/mml.R ");
+        Process p2 = Runtime.getRuntime().exec("pygmentize -f html -O full -o target/classes/public/visuR.html scripts_upload/mml.R ");
 		BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
 		String line2; 
 		while ((line2 = in2.readLine()) != null) {

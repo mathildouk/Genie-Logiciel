@@ -1,0 +1,71 @@
+body {
+    font-family: "sans-serif";
+}
+
+h1 {
+    margin-top: -20px;
+    margin-right: -20px;
+    margin-bottom: -20px;
+    margin-left: -20px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    background-color: gold;
+    font-size:  4em;
+}
+
+h2 {
+    margin-top: -20px;
+    margin-right: -20px;
+    margin-bottom: -20px;
+    margin-left: -20px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    background-color: gold;
+}
+
+.block {
+    width: 50%;
+    background-color: whitesmoke;
+    margin: 0 auto;
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    margin-bottom:10px; /* space from border to next element */
+    border-bottom:3px solid #aaa;
+}
+
+.algo_block {
+    width: 100%;
+    padding-top: 10px;
+    padding-right: 0px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    margin-left: -10px;
+    margin-bottom: 5px;
+    border-bottom: 5px transparent;
+    border-left: solid lightblue 6px;
+}
+
+.algo_details_block {
+    width: 100%;
+    margin-top: 10px;
+    padding-top: 5px;
+    padding-right: 0px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    border: 0px dotted #aaa;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.custom-button {
+    width: 100%;
+    font-size:  2em;
+}

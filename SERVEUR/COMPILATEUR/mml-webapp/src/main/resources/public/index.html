@@ -1,17 +1,29 @@
-<html>
+<!DOCTYPE html>
+<html lang='en'> 
+
+<head>
+    <meta charset='utf-8'/>
+    <link rel='stylesheet' type="text/css" href='style.css' media='screen'/>
+</head>
+
 <body>
-<h2>MML</h2>
-<form method="post" action="/generate">
-    <textarea name="mml" rows="20" cols="200" ></textarea>
-    <br />
-    <button>Submit</button>
-</form>
+<div class='block'>
+    <center>
+        <h1>Homepage</h1>
+    </center>
+</div>
 
+<div class="block clickable" onclick="window.location.href='mml-form.html'">
+    <center>
+    Click to generate MML with a <b>Form</b>.
+    </center>
+</div>
 
-<h1>Upload example</h1>
-<form method="post" action="/upload-example" enctype="multipart/form-data">
-    <input type="file" name="files" multiple>
-    <button>Submit</button>
-</form>
+<div class="block clickable" onclick="window.location.href='indexPROF.html'">
+    <center>
+    <b>Write</b> MML (not implemented yet).
+    </center>
+</div>
+
 </body>
 </html>

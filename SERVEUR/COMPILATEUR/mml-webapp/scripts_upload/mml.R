@@ -9,7 +9,7 @@ packages("rminer")
 packages("randomForest") 
 
 #Import the dataset 
-data = read.csv('/home/id1019/Documents/iris.csv', sep=',')
+data = read.csv('scripts_upload/upload/iris.csv', sep=',')
 columns_names = colnames(data)
 
 #Spliting dataset between features (X) and label (y)
@@ -21,7 +21,7 @@ formula <- as.formula(paste(Y_name, "~", paste(X_names, collapse= "+")))
 
 
 # Spliting dataset into training set and test set
-train_size = 0.7
+train_size = 0.8
 indice_train= sample(c(1:nrow(data)), train_size*nrow(data))
 train=data[indice_train, ]
 test=data[-indice_train, ]
@@ -30,21 +30,14 @@ X_test = test[X_names]
 Y_train = train[Y_name] 
 X_train = train[X_names]
 
-results_colnames = c('Algorithm', 'Parameters', 'FrameWork', 'balanced_accuracy', 'recall', 'precision', 'accuracy', 'f1', 'macro_recall', 'macro_precision', 'macro_accuracy', 'macro_f1')
+results_colnames = c('Algorithm', 'Parameters', 'FrameWork', 'balanced_accuracy', 'accuracy')
 results = matrix(ncol=length(results_colnames),nrow=1)
 
 try({
 	algo = randomForest(formula, data=train)
 	Y_pred = predict(algo, X_test,  type="class")
 	results = rbind(results, c('RandomForest', '', 'R', bal_accuracy_vec(Y_test[,1], Y_pred) 
-	, recall_vec(Y_test[,1], Y_pred, estimator="micro") 
-	, precision_vec(Y_test[,1], Y_pred, estimator="micro") 
 	, accuracy_vec(Y_test[,1], Y_pred) 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='ACC') /100 #ACC= equal to micro averaged F1 score (help) 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroTPR') /100 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroPRECISION') /100 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroACC') /100 
-	, mmetric(y=Y_test[,1], x =Y_pred, metric='macroF1') /100 
 	))
 	
 	

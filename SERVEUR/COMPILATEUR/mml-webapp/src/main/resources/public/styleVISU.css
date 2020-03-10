@@ -1,0 +1,80 @@
+body {
+    font-family: "sans-serif";
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1{
+    text-align: center;
+    margin-bottom:50px;
+}
+
+h2 {
+    margin-top: -20px;
+    margin-right: -20px;
+    margin-bottom: -20px;
+    margin-left: -20px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    background-color: gold;
+}
+
+/*div {
+    width: 50%;
+    background-color: whitesmoke;
+    margin: 0 auto;
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    margin-bottom:10px; /* space from border to next element */ /*
+    border-bottom:3px solid #aaa;
+} */
+
+.visualisation_code {
+    width: 100%;
+    background-color: whitesmoke;
+    margin: 0 auto;
+    margin-top: 40px;
+    margin-bottom:10px; /* space from border to next element */
+    border-bottom:3px solid #aaa;
+}
+
+
+
+.half_page_left{
+    width: 48%;
+    float:left;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.half_page_right{
+    width: 48%;
+    float:right;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.algo_block {
+    width: 90%;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    border-bottom:0px solid #aaa;
+    border-left:8px solid lightgray;
+    margin-left: -10px;
+}
+
+.algo_details_block {
+    width: 90%;
+    padding-top: 5px;
+    padding-right: 0px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    border: 0px dotted #aaa;
+}
