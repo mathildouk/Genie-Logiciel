@@ -1,2 +1,2 @@
-Algorithm;Parameters;FrameWork;balanced_accuracy;accuracy
-RandomForest;;scikit-learn;0.9743589743589745;0.9666666666666667
+Algorithm;Parameters;FrameWork;balanced_accuracy;macro_f1
+RandomForest;;scikit-learn;0.9445502645502646;0.9456189434920084

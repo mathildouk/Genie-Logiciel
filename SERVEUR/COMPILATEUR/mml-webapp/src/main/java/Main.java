@@ -28,6 +28,12 @@ public class Main {
         app.post("/generate", ctx -> {
         	Files.write(ctx.formParam("mml").getBytes(), new File("scripts_upload/code.mml")); 
         	processMML(ctx.formParam("mml"));
+        	
+        	//generate the html results visualisation
+			TableGenerator table_generator = new TableGenerator();
+			Files.write(table_generator.getHtml().getBytes(), new File("target/classes/public/visuResults.html")); 
+			
+        	
         	ctx.redirect("/results-choose.html");
         });
 
@@ -39,6 +45,13 @@ public class Main {
         	FormParser form_parser = new FormParser(ctx);
         	Files.write(form_parser.mml.getBytes(), new File("scripts_upload/code.mml")); 
         	processMML(form_parser.mml);
+        	
+    		
+			//generate the html results visualisation
+			TableGenerator table_generator = new TableGenerator();
+			Files.write(table_generator.getHtml().getBytes(), new File("target/classes/public/visuResults.html")); 
+			
+				
         	ctx.redirect("/results-choose.html");
         });
         

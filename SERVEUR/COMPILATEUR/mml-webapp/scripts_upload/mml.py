@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split 
-from sklearn.metrics import balanced_accuracy_score
-from sklearn.metrics import accuracy_score
+from sklearn.model_selection import cross_validate
+from sklearn.model_selection import RepeatedKFold
 from sklearn.ensemble import RandomForestClassifier 
 
 #Using pandas to import the dataset 
@@ -15,20 +14,17 @@ Y = data[Y_name]
 X = data.drop(columns=Y_name) 
 
 
-
-# Spliting dataset into training set and test set
-train_size = 0.8
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size=train_size)
-results=[['Algorithm', 'Parameters', 'FrameWork', 'balanced_accuracy', 'accuracy']]
+#Cross Validation
+numRepetitionCross = 1
+rkf = RepeatedKFold( n_repeats=numRepetitionCross)
+results=[['Algorithm', 'Parameters', 'FrameWork', 'balanced_accuracy', 'macro_f1']]
 
 
 try:
 	algo = RandomForestClassifier()
-	algo.fit(X_train, Y_train)
+	cv_results = cross_validate(algo, X, Y, cv= rkf, scoring=['balanced_accuracy', 'f1_macro'])
 	framework_algo = ['RandomForest', '', 'scikit-learn']
-	framework_algo.extend([balanced_accuracy_score(Y_test, algo.predict(X_test)) 
-	, accuracy_score(Y_test, algo.predict(X_test)) 
-	])
+	framework_algo.extend([cv_results[k].mean() for k in cv_results.keys() if k.startswith("test_")])
 	results.append(framework_algo)
 except: print('At least one algorithm has received an error')
 

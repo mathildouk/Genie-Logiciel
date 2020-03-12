@@ -1,7 +1,5 @@
 datainput "scripts_upload/upload/iris.csv"
 mlframework scikit-learn
 algorithm RF
-mlframework R
-algorithm RF
-TrainingTest { percentageTraining 80 }
-balanced_accuracy accuracy 
+CrossValidation { numRepetitionCross 1 }
+balanced_accuracy macro_accuracy macro_F1 

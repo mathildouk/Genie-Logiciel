@@ -45,7 +45,7 @@ public class MMLCompiler {
 		String codepython ="";
 		String codeR ="";
 		
-		Process p = Runtime.getRuntime().exec("rm scripts_upload/mml.py scripts_upload/mml.R scripts_upload/results/results_python.csv scripts_upload/results/results_R.csv scripts_upload/results/results.csv target/classes/public/visuPYTHON.html target/classes/public/visuR.html");
+		Process p = Runtime.getRuntime().exec("rm scripts_upload/mml.py scripts_upload/mml.R scripts_upload/results/results_python.csv scripts_upload/results/results_R.csv scripts_upload/results/results.csv target/classes/public/visuPYTHON.html target/classes/public/visuR.html target/classes/public/visuResults.html");
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String line; 
 		while ((line = in.readLine()) != null) {
@@ -88,7 +88,7 @@ public class MMLCompiler {
 		while ((line2 = in2.readLine()) != null) {
 			System.out.println(line2);
 	    }
-			
+		
 	}
 	
 	
@@ -184,6 +184,7 @@ public class MMLCompiler {
 			for (ValidationMetric validationMetric : validationMetrics) {
 				
 				columns_names_result.add(mkValueInSingleQuote(validationMetric.toString().toLowerCase())) ;
+				
 				switch(validationMetric) {
 					case BALANCED_ACCURACY:
 						pythonImport += "from sklearn.metrics import balanced_accuracy_score\n";
@@ -214,13 +215,15 @@ public class MMLCompiler {
 						metrics_values.add("precision_score(Y_test, algo.predict(X_test),average='macro') \n");			
 						break;							
 					case MACRO_ACCURACY:
-						//j'ai pas trouvé la fonction python	
-					break;				
+						//not found
+						columns_names_result.remove(columns_names_result.size()-1);
+						break;	
+						
+								
 				}
 				
 			}
 			metrics_values_list = metrics_values.toString();
-			System.out.println(metrics_values_list.getClass());
 			
 		}else if(stratificationMethod instanceof CrossValidation) {
 			pythonImport += "from sklearn.model_selection import cross_validate\n"
@@ -263,7 +266,8 @@ public class MMLCompiler {
 						list_scoring.add("'precision_macro'");
 						break;						
 					case MACRO_ACCURACY:
-						//j'ai pas trouvé la fonction python	
+						//not found
+						columns_names_result.remove(columns_names_result.size()-1);
 					break;
 				}
 			}
