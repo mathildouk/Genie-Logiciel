@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +20,14 @@ public class Main {
     public static void main(String[] args) {
 
   
-		
+    	
         Javalin app = Javalin.create(config -> {
             config.addStaticFiles("/public");
             
         }).start(8080);
 
         app.post("/generate", ctx -> {
+        	
         	//If the user chooses the mml editor
         	Files.write(ctx.formParam("mml").getBytes(), new File("scripts_upload/code.mml")); 
         	processMML(ctx.formParam("mml"));
@@ -40,6 +42,7 @@ public class Main {
 
         app.post("/mml-form-generate", ctx -> {
         	//If the user chooses the form
+        	
         	
         	ctx.uploadedFiles("myFile").forEach(file -> {
                 FileUtil.streamToFile(file.getContent(), "scripts_upload/upload/" + file.getFilename());

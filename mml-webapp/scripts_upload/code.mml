@@ -1,23 +1,7 @@
-datainput "/home/id1019/Documents/iris.csv"
-mlframework R
-algorithm DT 20
-mlframework R
-algorithm RF
-mlframework R
-algorithm LogisticRegression
-mlframework R
-algorithm XGboost
-mlframework R
-algorithm SVM gamma= 8 C=2 kernel= radial classification nu-classification
-mlframework scikit-learn
-algorithm DT 20
+datainput "scripts_upload/upload/iris.csv"
 mlframework scikit-learn
 algorithm RF
 mlframework scikit-learn
-algorithm LogisticRegression
-mlframework scikit-learn
-algorithm XGboost
-mlframework scikit-learn
-algorithm SVM gamma= 8 C=2 kernel= radial classification nu-classification
-TrainingTest { percentageTraining 70 }
-balanced_accuracy recall precision accuracy F1 macro_recall macro_precision macro_accuracy macro_F1
+algorithm RF
+CrossValidation { numRepetitionCross 1 }
+balanced_accuracy recall precision 

@@ -83,7 +83,7 @@ public class MMLCompiler {
 		}
 		
 		//pooling of each framework's results in one file
-		Process p2 = Runtime.getRuntime().exec("/home/id1019/anaconda3/bin/python scripts_upload/concatCSV.py");
+		Process p2 = Runtime.getRuntime().exec("python3.6 scripts_upload/concatCSV.py");
 		BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
 		String line2; 
 		while ((line2 = in2.readLine()) != null) {
@@ -436,7 +436,7 @@ public class MMLCompiler {
 		 */
 		
 		
-		Process p = Runtime.getRuntime().exec("/home/id1019/anaconda3/bin/python scripts_upload/mml.py"); //which python on terminal
+		Process p = Runtime.getRuntime().exec("python3.6 scripts_upload/mml.py"); //which python on terminal
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String line; 
