@@ -16,7 +16,7 @@ Man-machine language is a specification language. That means that it's a languag
 
 During our project, we created a MML language about machine learning. Indeed, many languages have their own machine learning algorithm. But each language has its own specification, implementation and vocabulary.  
  
-Or goal is to create a new machine learning language. This new language will be easier to understand and easier to learn. Indeed, it is used only for machine learning purpose so the syntax is conceived exclusively for this.  
+Our goal is to create a new machine learning language. This new language will be easier to understand and easier to learn. Indeed, it is used only for machine learning purpose so the syntax is conceived exclusively for this.  
 
 First, we tried to create our MML language. But, for the practical sessions and project, we used a language created by our teacher. We chose to implement two languages (R and the framework scikit-learn from Python) and five differents algorithms:  
 
@@ -36,7 +36,7 @@ Between the configuration pages and the results pages, many things happen in the
 
 First, our application converts the form into mml language. The server can read the mml file. It will convert and exports the mml files into R and/or Python files then it compiles these files. When the application compiles the code, it also deletes former results files. 
 
-Each R or Python files returns a csv file. It contains the name of the algorithm, its parameters, the framework and the results of the different metrics. After, the two csv are concatenate. This csv is parsed in java to create a html table for the visualisation of the results. 
+Each R or Python files returns a csv file. It contains the name of the algorithm, its parameters, the framework and the results of the different metrics. After, the two csv are concatenated. This csv is parsed in java to create a html table for the visualisation of the results. 
 
 For the visualisation of the Python and R code, we need a highlighted code. So, the server use pygment to convert our code into html page. And these two html pages are including in another html page with the right structure and style. 
 
@@ -44,7 +44,7 @@ For the visualisation of the Python and R code, we need a highlighted code. So, 
  
 ### Configuration pages:  
 
-On the homepage, you can choose between two ways to choose the parameters of our application: the editor or the form. 
+On the homepage, you can choose between two ways to define the parameters of our application: the editor or the form. 
 
 For information, the **cross-validation in R is not implemented in our application**. 
 
@@ -56,16 +56,16 @@ In this editor, you have to write your programme in our mml language.
 
 For the syntax, you can read the **mml_language.md** files. 
 
-Formula haven't been implemented. Our application choose the last column for the predictive variable.
+Formula haven't been implemented. Our application chooses the last column for the predictive variable.
 
 ![Editor](Screencast/editor.png)
 
 
 #### Form 
 
-Unlike in the editor, here everything is easy. Indeed, you don't have to know our mml language you just to click on the different buttons. Our application convert for you the form into a mml languages.
+Unlike in the editor, here everything is easy. Indeed, you don't have to know our mml language you just have to click on the different buttons. Our application converts for you the form into a mml languages.
 
-First, you can choose the files in which the algorithm will perform. The interest variable is the last column of the csv files. 
+First, you can choose the files where you want to apply a machine learning algorithm. The interest variable is the last column of the csv files. 
 
 After you can choose the algorithm, the language and the parameters you want. When the form is complete and good for you, you can submit it. 
 
@@ -90,7 +90,7 @@ If you only chose R or Python algorithm, one of the sides will be empty with err
 
 #### The comparison of different algorithms
 
-These pages contain a table with the performance of the different algorithms. So, you can compare algorithms about criterions you choose before.
+These pages contain a table with the performance of the different algorithms. So, you can compare the algorithms with the criterions you chose before.
 
 ![Comparison algorithms](Screencast/results.png)
 
