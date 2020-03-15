@@ -56,7 +56,7 @@ algorithm SVM gamma=gamma C=C kernel=SVMKernel classification SVMClassification
 
 *Example*
 ```
-algorithm SVM gamma=5 C=3 kernel=linear classification=C-classification
+algorithm SVM gamma=5 C=3 kernel=linear classification C-classification
 ```
 
 ### DT : Décision Tree
@@ -93,7 +93,7 @@ CrossValidation { numRepetitionCross number}
 
 *Example:*
 ```
-CrossValidation { 30 }
+CrossValidation { numberRepetitionCross 30 }
 ```
 
 ### TrainingTest
@@ -105,7 +105,7 @@ TrainingTest { percentageTraining number}
 
 *Example*
 ```
-TrainingTest { 70 }
+TrainingTest { percentageTraining 70 }
 ```
 
 * **ValidationMetric** : balanced_accuracy or recall or precision or F1  or accuracy or macro_recall or macro_precision or macro_F1 or macro_accuracy. As many as you want.
