@@ -109,7 +109,7 @@ TrainingTest { percentageTraining 70 }
 ```
 
 * **ValidationMetric** : balanced_accuracy or recall or precision or F1  or accuracy or macro_recall or macro_precision or macro_F1 or macro_accuracy. As many as you want.
-In case of multi-class (more than 2 classes), recall, precision, f1, accuracy are computed with the "micro" average
+In case of multi-class (more than 2 classes), recall, precision, f1, accuracy are computed with the "micro" average.
 
 *Example*
 ```
