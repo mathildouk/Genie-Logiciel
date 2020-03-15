@@ -39,12 +39,16 @@ On the homepage, you can choose between two ways to choose the parameters of our
 
 For information, the **cross-validation in R is not implemented in our application**. 
 
+![Homepage](Screencast/homepage.png)
  
 #### Editor  
 
 In this editor, you have to write your programme in our mml language. 
 
 For the syntax, you can read the **mml_language.md** files. 
+
+![Editor](Screencast/editor.png)
+
 
 #### Form 
 
@@ -54,19 +58,28 @@ First, you can choose the files in which the algorithm will perform. The interes
 
 After you can choose the algorithm, the language and the parameters you want. When the form is complete and good for you, you can submit it. 
 
+![Form1](Screencast/form1.png)
+
+![Form2](Screencast/form2.png)
+
 ### Results pages 
 
 After submitting the form or the mml code, you arrive on an intermediate page. We will be able to choose between the visualisation of the code or the comparison of the algorithms.  
 
-#### The obtained code 
+![results choice](Screencast/resultschoice.png)
+
+#### Code visualisation
 
 In these pages, you can visualise the code created by our application with the parameters you chose in the first part. The code is highlight with the tool pygment. 
 
 If you only chose R or Python algorithm, one of the sides will be empty with error but it's normal. 
 
-#### The comparison of the different algorithm 
+![Visualisation Code](Screencast/codevisu.png)
+
+#### The comparison of different algorithms
 
 These pages contain a table with the performance of the different algorithms. So, you can compare algorithms about four criterions: accuracy, f, recall and macro f. 
 
+![Comparison algorithms](Screencast/results.png)
 
 ## **We hope you will appreciate our web application!**
