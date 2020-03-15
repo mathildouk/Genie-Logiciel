@@ -30,6 +30,15 @@ First, we tried to create our MML language. But, for the practical sessions and 
 
 * XGBoost 
 
+## Application Compilation
+
+Between the configuration pages and the results pages, many things happen in the back-end. 
+
+First, our application converts the form into mml language. The server can read the mml file. It will convert and exports the mml files into R and/or Python files then it compiles these files. When the application compiles the code, it also deletes former results files. 
+
+Each R or Python files returns a csv file. It contains the name of the algorithm, its parameters, the framework and the results of the different metrics. After, the two csv are concatenate. This csv is parsed in java to create a html table for the visualisation of the results. 
+
+For the visualisation of the Python and R code, we need a highlighted code. So, the server use pygment to convert our code into html page. And these two html pages are including in another html page with the right structure and style. 
 
 ## The website architecture:  
  
@@ -47,12 +56,14 @@ In this editor, you have to write your programme in our mml language.
 
 For the syntax, you can read the **mml_language.md** files. 
 
+Formula haven't been implemented. Our application choose the last column for the predictive variable.
+
 ![Editor](Screencast/editor.png)
 
 
 #### Form 
 
-Unlike in the editor, here everything is easy. Indeed, you don't have to know our mml language you just to click on the different buttons! 
+Unlike in the editor, here everything is easy. Indeed, you don't have to know our mml language you just to click on the different buttons. Our application convert for you the form into a mml languages.
 
 First, you can choose the files in which the algorithm will perform. The interest variable is the last column of the csv files. 
 
@@ -66,6 +77,7 @@ After you can choose the algorithm, the language and the parameters you want. Wh
 
 After submitting the form or the mml code, you arrive on an intermediate page. We will be able to choose between the visualisation of the code or the comparison of the algorithms.  
 
+
 ![results choice](Screencast/resultschoice.png)
 
 #### Code visualisation
@@ -78,7 +90,7 @@ If you only chose R or Python algorithm, one of the sides will be empty with err
 
 #### The comparison of different algorithms
 
-These pages contain a table with the performance of the different algorithms. So, you can compare algorithms about four criterions: accuracy, f, recall and macro f. 
+These pages contain a table with the performance of the different algorithms. So, you can compare algorithms about criterions you choose before.
 
 ![Comparison algorithms](Screencast/results.png)
 
