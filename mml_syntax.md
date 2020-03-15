@@ -2,16 +2,16 @@
 
 The structure of our language : 
 ```
-	input=DataInput
-	algorithms+=MLChoiceAlgorithm+
-	formula=RFormula?
-	validation=Validation
+	DataInput
+	MLChoiceAlgorithm
+	Validation
 ```
 **/!\ Any space before egals**
+
 ## DataInput
 
 ```
-DataInput: filelocation parsingInstruction;
+datainput filelocation parsingInstruction
 ```
 
 * **filelocation** : string
@@ -20,16 +20,15 @@ DataInput: filelocation parsingInstruction;
 
 *Example*
 ```
-input= "data/iris.csv" ";"
+datainput "data/iris.csv" ;
 ```
 
 ## MLChoiceAlgorithm
 You can choose as much algorithm as you want
 
 ```
-MLChoiceAlgorithm:
-	'mlframework' framework = FrameworkLang
-	'algorithm' algorithm = MLAlgorithm
+mlframework FrameworkLang
+algorithm MLAlgorithm
 ```
 * **FrameworkLang** : scikit-learn or R.
 
@@ -37,17 +36,17 @@ MLChoiceAlgorithm:
 
 *Example*
 ```
-MLChoiceAlgorithm = scikit-learn
-                    RandomForest
+mlframework scikit-learn
+algorithm RandomForest
+mlframework R
+algorithm XGBoost
 ```
 
 Some algorithm requires hyperparameters.
 
 ### SVM
 ```
-MLChoiceAlgorithm= scikit-learn
-SVM gamma=gamma C=C kernel=SVMKernel
-	classification=SVMClassification
+algorithm SVM gamma=gamma C=C kernel=SVMKernel classification SVMClassification
 ```
   
 * **gamma** : Float. Optionnal
@@ -57,80 +56,85 @@ SVM gamma=gamma C=C kernel=SVMKernel
 
 *Example*
 ```
-MLChoiceAlgorithm = scikit-learn
-SVM gamma=5 C=3 kernel=linear
-classification=C-classification
+algorithm SVM gamma=5 C=3 kernel=linear classification=C-classification
 ```
 
 ### DT : Décision Tree
-
-```
-DT max_depth
-```
   
+```
+algorithm DT max_depth
+```
 * **max_depth** : Integer. Optionnal
 
 *Example*
 ```
-MLChoiceAlgorithm = scikit-learn
-DT 30
+algorithm DT 30
 ```
 
 ### RandomForest / LogisticRegression / XGboost 
 
 No hyperparameters
 
-## RFormula
-
-```
-RFormula: predictive=FormulaItem ~ predictors=XFormula
-```
-* **FormulaItem** : column(Int) or colName(String). At least one. Separated by '+' everytime.
-* **XFormula**: AllVariables('.') or PredictorVariable.
-
-#### PredictorVariables
-```
-PredictorVariables : vars=FormulaItem 
-```
-
-*Example*:
-```
-RFormula: predictive="PetalLength" ~ predictors= .
-```
 
 ## Validation
 
 ```
-Validation: 	stratification=StratificationMethod
-	             metric=ValidationMetric
+StratificationMethod
+ValidationMetric
 ```
 
 * **StratificationMethod** : CrossValidation or TrainingTest. **/!\ Cross validation isn't impleted in R**
-* **ValidationMetric** : balanced_accuracy or recall or precision or F1  or accuracy or macro_recall or macro_precision or macro_F1 or macro_accuracy. As many as you want.
-In case of multi-class (more than 2 classes), recall, precision, f1, accuracy are computed with the "micro" average
 
 ### CrossValidation
 ```
-CrossValidation {numRepetitionCross}
+CrossValidation { numRepetitionCross number}
 ```
-* **numRepetitionCross** : Int.
+* **number** : Int.
 
 *Example:*
 ```
-CrossValidation {30}
-recall accuracy
+CrossValidation { 30 }
 ```
 
 ### TrainingTest
 
 ```
-TrainingTest {percentageTraining};
+TrainingTest { percentageTraining number}
 ```
-* **percentageTraining** : Int.
+* **number** : Int.
 
 *Example*
 ```
-TrainingTest {70}
-balanced_accuracy recall
+TrainingTest { 70 }
 ```
+
+* **ValidationMetric** : balanced_accuracy or recall or precision or F1  or accuracy or macro_recall or macro_precision or macro_F1 or macro_accuracy. As many as you want.
+In case of multi-class (more than 2 classes), recall, precision, f1, accuracy are computed with the "micro" average
+
+*Example*
+```
+balanced_accuracy F1
+```
+
+# General Example
+
+```
+datainput "/home/id1146/Documents/iris.csv"
+mlframework scikit-learn
+algorithm DT 15
+mlframework scikit-learn
+algorithm RF
+mlframework R
+algorithm DT 15
+mlframework R
+algorithm RF
+mlframework scikit-learn
+algorithm SVM gamma=5.6
+mlframework scikit-learn
+algorithm SVM classification nu-classification
+TrainingTest { percentageTraining 70 }
+balanced_accuracy F1
+
+```
+
 
