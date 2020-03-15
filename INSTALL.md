@@ -20,8 +20,8 @@ This is required for the R and Python code visualisation. It's used to generate 
 
 ## Importing the Git project
 In the menu of Eclipse IDE, choose File > import > Git > Projects from Git, then choose Clone URI.
-complete the URI field with https://github.com/mathildouk/Genie-Logiciel
-Then click on Next until Local Destination and change the directory for your path where you want to download files. Then next and finish.
+Complete the URI field with https://github.com/mathildouk/Genie-Logiciel
+Then click on Next until Local Destination and change the directory to the path where you want to download files. Then next and finish.
 
 ## Let's start
 In order to launch the application, open the file Main.java situated in "MML Webapp/src/main/java/" (in eclipse). Right click > Run as > Java application. This will start Javalin. The application is available under localhost:8080.
