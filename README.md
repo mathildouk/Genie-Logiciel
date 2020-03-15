@@ -7,7 +7,7 @@
 
 ## The context of this project:  
 
-This project is the common theme of several classes aimed at introducing us to the world of web applications with back and front ends. The idea was to learn the skills required to create a web application through several practical sessions in order to later apply them to this project. Moreover, to connect this project to our other courses, we were asked to create a web application that would apply different classification algorithms to a data-set specified by the user. The user will choose algorithms he wants to perform. And the application will return codes in selected languages if the user wants to perform by him-self these algorithms. Or the user can compare the algorithms on several criterion as the accuracy of the model. 
+This project is the common theme of several classes aimed at introducing us to the world of web applications with back and front ends. The idea was to learn the skills required to create a web application through several practical sessions in order to later apply them to this project. Moreover, to connect this project to our other courses, we were asked to create a web application that would apply different classification algorithms to a data-set specified by the user. The user will choose algorithms he wants to use. And the application will return codes in selected languages if the user wants to execute by him-self these algorithms. Or the user can compare the algorithms on several criterions such as the accuracy of the model. 
  
 
 ## Man-Machine Language (MML) 
@@ -56,7 +56,7 @@ In this editor, you have to write your programme in our mml language.
 
 For the syntax, you can read the **mml_language.md** files. 
 
-Formula haven't been implemented. Our application chooses the last column for the predictive variable.
+Formula was not implemented. Therefore our application considers that the last column is the predictive variable.
 
 ![Editor](Screencast/editor.png)
 
@@ -75,7 +75,7 @@ After you can choose the algorithm, the language and the parameters you want. Wh
 
 ### Results pages 
 
-After submitting the form or the mml code, you arrive on an intermediate page. We will be able to choose between the visualisation of the code or the comparison of the algorithms.  
+After submitting the form or the mml code, you arrive on an intermediate page. You will be able to choose between the visualisation of the code or the comparison of the algorithms.  
 
 
 ![results choice](Screencast/resultschoice.png)
