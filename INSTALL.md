@@ -1,6 +1,6 @@
 # INSTALL
 This application was made to be used on Ubuntu (Linux). If you don't have linux, you can create a virtual machine with VMWare for example.
-## Rerequisites
+## Requisites
 In order to use this application, you need
 * **Python version 3.6 and some libraries:**
 We can find here https://medium.com/@moreless/install-python-3-6-on-ubuntu-16-04-28791d5c2167 a tutorial to install python3.6. 
