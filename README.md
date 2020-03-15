@@ -90,7 +90,7 @@ If you only chose R or Python algorithm, one of the sides will display an error 
 
 #### The comparison of different algorithms
 
-These pages contain a table with the performance of the different algorithms. So, you can compare the algorithms with the criterions you chose before.
+This page contains a table with the performance of the different algorithms. So, you can compare the algorithms with the criterions you chose before.
 
 ![Comparison algorithms](Screencast/results.png)
 
