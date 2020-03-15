@@ -11,7 +11,7 @@ $ pip3.6 install numpy
 $ pip3.6 install xgboost
 $ pip3.6 install scikit-learn
 ```
-* **R version 3.6.2**
+* **R version 3.6.2** with a CRAN mirror because the following packages are needed : yardstick, rminer, rpart, randomForest, nnet, xgboost, e1071
 * **Eclipse IDE for Java and DSL Developers**
 See : http://www.eclipse.org/downloads/eclipse-packages/
 * **Pygments**
