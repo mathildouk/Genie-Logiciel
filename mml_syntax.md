@@ -20,7 +20,7 @@ datainput filelocation parsingInstruction
 
 *Example*
 ```
-datainput "data/iris.csv" ;
+datainput "data/iris.csv"
 ```
 
 ## MLChoiceAlgorithm
