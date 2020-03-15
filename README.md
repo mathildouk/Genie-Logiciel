@@ -84,7 +84,7 @@ After submitting the form or the mml code, you arrive on an intermediate page. Y
 
 In these pages, you can visualise the code created by our application with the parameters you chose in the first part. The code is highlight with the tool pygment. 
 
-If you only chose R or Python algorithm, one of the sides will be empty with error but it's normal. 
+If you only chose R or Python algorithm, one of the sides will display an error but it's normal. 
 
 ![Visualisation Code](Screencast/codevisu.png)
 
