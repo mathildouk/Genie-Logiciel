@@ -24,7 +24,7 @@ datainput "data/iris.csv"
 ```
 
 ## MLChoiceAlgorithm
-You can choose as much algorithm as you want
+You can choose as many algorithms as you want
 
 ```
 mlframework FrameworkLang
@@ -42,7 +42,7 @@ mlframework R
 algorithm XGBoost
 ```
 
-Some algorithm requires hyperparameters.
+Some algorithms require hyperparameters.
 
 ### SVM
 ```
@@ -59,7 +59,7 @@ algorithm SVM gamma=gamma C=C kernel=SVMKernel classification SVMClassification
 algorithm SVM gamma=5 C=3 kernel=linear classification C-classification
 ```
 
-### DT : Décision Tree
+### DT : Decision Tree
   
 ```
 algorithm DT max_depth
@@ -83,7 +83,7 @@ StratificationMethod
 ValidationMetric
 ```
 
-* **StratificationMethod** : CrossValidation or TrainingTest. **/!\ Cross validation isn't impleted in R**
+* **StratificationMethod** : CrossValidation or TrainingTest. **/!\ Cross validation is not impleted in R**
 
 ### CrossValidation
 ```
