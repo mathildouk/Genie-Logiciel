@@ -10,7 +10,7 @@
 This project is the common theme of several classes aimed at introducing us to the world of web applications with back and front ends. The idea was to learn the skills required to create a web application through several practical sessions in order to later apply them to this project. Moreover, to connect this project to our other courses, we were asked to create a web application that would apply different classification algorithms to a data-set specified by the user. The user will choose algorithms he wants to use. And the application will return codes in selected languages if the user wants to execute by him-self these algorithms. Or the user can compare the algorithms on several criterions such as the accuracy of the model. 
  
 
-## Man-Machine Language (MML) 
+## Multi Machine Language (MML) 
 
 Man-machine language is a specification language. That means that it's a language used to create new languages. And this new language is often a standardised version of different languages.   
 
