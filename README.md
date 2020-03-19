@@ -12,7 +12,7 @@ This project is the common theme of several classes aimed at introducing us to t
 
 ## Multi Machine Language (MML) 
 
-Man-machine language is a specification language. That means that it's a language used to create new languages. And this new language is often a standardised version of different languages.   
+Multi machine language is a specification language. That means that it's a language used to create new languages. And this new language is often a standardised version of different languages.   
 
 During our project, we created a MML language about machine learning. Indeed, many languages have their own machine learning algorithm. But each language has its own specification, implementation and vocabulary.  
  
